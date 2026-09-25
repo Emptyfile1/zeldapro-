@@ -1,7 +1,141 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
+import gsap from 'gsap';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { useGSAP } from '@gsap/react';
+
+// --- Your imported logo/icon assets ---
+// Update these paths to match wherever your logo files actually live.
+// Works with .svg, .png, .webp, etc. via any standard bundler (Vite/CRA/Next).
+import DigitalIcon from '../assets/gcp_ai-hub.svg';
+import IotIcon from '../assets/gcp_ai-platform.svg';
+import AiIcon from '../assets/gcp_cloud-optimization-ai.svg';
+
+gsap.registerPlugin(ScrollTrigger);
 
 export const ManifestoSection = () => {
   const [activeCategory, setActiveCategory] = useState('digital');
+  const containerRef = useRef(null);
+  const diagramRef = useRef(null);
+
+  useEffect(() => {
+    // Refresh ScrollTrigger calculations after mount and DOM paint
+    const timer = setTimeout(() => {
+      ScrollTrigger.refresh();
+    }, 150);
+    return () => clearTimeout(timer);
+  }, []);
+
+  useGSAP(
+    () => {
+      const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      if (prefersReducedMotion) return;
+
+      // Animate section badge
+      gsap.from('.manifesto-badge', {
+        scrollTrigger: {
+          trigger: '.manifesto-badge',
+          start: 'top 88%',
+          once: true,
+        },
+        y: -15,
+        opacity: 0,
+        duration: 0.6,
+        clearProps: 'all',
+      });
+
+      // Animate manifesto statement
+      gsap.from('.manifesto-statement', {
+        scrollTrigger: {
+          trigger: '.manifesto-statement',
+          start: 'top 85%',
+          once: true,
+        },
+        y: 25,
+        opacity: 0,
+        duration: 0.7,
+        clearProps: 'all',
+      });
+
+      // Animate diagram area directly on its own trigger
+      const diagramTl = gsap.timeline({
+        scrollTrigger: {
+          trigger: diagramRef.current || '.manifesto-diagram-area',
+          start: 'top 85%',
+          once: true,
+        },
+        defaults: { ease: 'power3.out' },
+        onComplete: () => {
+          gsap.set('.manifesto-root-node, .manifesto-branch-line, .manifesto-category-card', {
+            clearProps: 'opacity,transform',
+          });
+        },
+      });
+
+      diagramTl
+        .from('.manifesto-root-node', {
+          scale: 0.75,
+          opacity: 0,
+          duration: 0.6,
+          ease: 'back.out(1.5)',
+        })
+        .from(
+          '.manifesto-branch-line',
+          {
+            opacity: 0,
+            duration: 0.4,
+          },
+          '-=0.2'
+        )
+        .from(
+          '.manifesto-category-card',
+          {
+            y: 35,
+            opacity: 0,
+            stagger: 0.12,
+            duration: 0.6,
+            ease: 'power2.out',
+          },
+          '-=0.2'
+        )
+        // Pop each card's logo in right after its card lands
+        .from(
+          '.manifesto-category-icon',
+          {
+            scale: 0.6,
+            opacity: 0,
+            stagger: 0.12,
+            duration: 0.5,
+            ease: 'back.out(2)',
+          },
+          '-=0.35'
+        );
+
+      // Subtle ambient breathing on the circle node
+      gsap.to('.manifesto-root-node', {
+        y: -3,
+        duration: 2.6,
+        repeat: -1,
+        yoyo: true,
+        ease: 'sine.inOut',
+      });
+    },
+    { scope: containerRef }
+  );
+
+  // Whenever the active category changes, give its logo a little pop
+  useGSAP(
+    () => {
+      const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      if (prefersReducedMotion) return;
+
+      gsap.fromTo(
+        `.category-icon-${activeCategory}`,
+        { scale: 0.7, rotate: -8 },
+        { scale: 1, rotate: 0, duration: 0.5, ease: 'back.out(2.2)' }
+      );
+    },
+    { scope: containerRef, dependencies: [activeCategory] }
+  );
 
   const categories = [
     {
@@ -9,75 +143,36 @@ export const ManifestoSection = () => {
       title: 'Digital',
       description:
         'Cloud & enterprise digital architecture, robust systems turning business operations into responsive digital infrastructure. High-availability backends engineered for transaction velocity.',
-      icon: (
-        <svg className="w-12 h-12" viewBox="0 0 24 24" fill="none">
-          <path
-            d="M4 8 L12 4 L20 8 L12 12 Z"
-            stroke="#1D4ED8"
-            strokeWidth="1.5"
-            strokeLinejoin="round"
-          />
-          <path
-            d="M4 8 V16 L12 20 L20 16 V8"
-            stroke="#1D4ED8"
-            strokeWidth="1.5"
-            strokeLinejoin="round"
-          />
-          <path d="M12 12 V20" stroke="#1D4ED8" strokeWidth="1.5" />
-        </svg>
-      ),
+      icon: DigitalIcon,
     },
     {
       id: 'iot',
       title: 'IOT',
       description:
         'Connected sensor networks and edge hardware integrations bridging industrial environments with intelligent telemetric backbones. Real-time protocols for resilient device orchestration.',
-      icon: (
-        <svg className="w-12 h-12" viewBox="0 0 24 24" fill="none">
-          <circle cx="12" cy="12" r="2.6" fill="#1D4ED8" />
-          <g stroke="#1D4ED8" strokeWidth="1.4">
-            <circle cx="12" cy="12" r="9" />
-            <circle cx="12" cy="12" r="9" transform="rotate(60 12 12)" />
-          </g>
-        </svg>
-      ),
+      icon: IotIcon,
     },
     {
       id: 'ai',
       title: 'AI',
       description:
         'Custom machine learning models, autonomous agent frameworks, and contextual cognitive layers embedded directly into mission-critical software workflows.',
-      icon: (
-        <svg className="w-12 h-12" viewBox="0 0 24 24" fill="none">
-          <path
-            d="M8 3c-2.2 0-4 1.8-4 4 0 .7.2 1.4.5 2C3.6 9.6 3 10.7 3 12c0 1.5.9 2.8 2.2 3.4C5.1 15.9 5 16.4 5 17c0 2.2 1.8 4 4 4h1V3H8Z"
-            stroke="#1D4ED8"
-            strokeWidth="1.4"
-            strokeLinejoin="round"
-          />
-          <path
-            d="M16 3c2.2 0 4 1.8 4 4 0 .7-.2 1.4-.5 2 .9.6 1.5 1.7 1.5 3 0 1.5-.9 2.8-2.2 3.4.1.5.2 1 .2 1.6 0 2.2-1.8 4-4 4h-1V3h2Z"
-            stroke="#1D4ED8"
-            strokeWidth="1.4"
-            strokeLinejoin="round"
-          />
-        </svg>
-      ),
+      icon: AiIcon,
     },
   ];
 
   return (
-    <section className="py-20 lg:py-28 bg-white text-[#0B1220] overflow-hidden">
-      <div className="max-w-310 mx-auto px-6 sm:px-10">
+    <section ref={containerRef} className="py-20 lg:py-28 bg-white text-[#0B1220] overflow-hidden">
+      <div className="max-w-[1240px] mx-auto px-6 sm:px-10">
         {/* Sub-label */}
         <div className="text-center mb-8">
-          <span className="font-heading font-bold text-2xl sm:text-3xl lg:text-4xl grad-text g-bkbl2">
+          <span className="manifesto-badge inline-block font-heading font-bold text-2xl sm:text-3xl lg:text-4xl grad-text g-bkbl2">
             [Who we are]
           </span>
         </div>
 
         {/* Manifesto Statement */}
-        <p className="font-heading font-bold text-xl sm:text-2xl lg:text-[32px] leading-snug sm:leading-[1.35] tracking-tight max-w-4xl mx-auto text-left text-[#0B1220]">
+        <p className="manifesto-statement font-heading font-bold text-xl sm:text-2xl lg:text-[32px] leading-snug sm:leading-[1.35] tracking-tight max-w-4xl mx-auto text-left text-[#0B1220]">
           We don't just build technology. We build possibilities. Zeldapro is built around a simple
           belief:{' '}
           <span className="grad-text g-manifesto">
@@ -85,45 +180,50 @@ export const ManifestoSection = () => {
           </span>
         </p>
 
-        {/* Interactive Architecture Diagram */}
-        <div className="max-w-4xl mx-auto mt-16 sm:mt-20 text-center">
-          {/* Root Node */}
-          <div className="w-28 h-28 rounded-full border-[1.5px] border-dashed border-[#CBD5E1] bg-white flex flex-col items-center justify-center mx-auto shadow-sm transition-all duration-300 hover:border-blue-500 hover:shadow-md">
-            <span className="w-2.5 h-2.5 rounded-full bg-[#1D4ED8] mb-1.5 animate-pulse" />
-            <span className="font-heading font-semibold text-[11px] text-[#0B1220] text-center px-2">
+        {/* Interactive Architecture Diagram Area */}
+        <div ref={diagramRef} className="manifesto-diagram-area max-w-4xl mx-auto mt-16 sm:mt-20 text-center">
+          {/* Root Central Circle Node */}
+          <div className="manifesto-root-node relative w-32 h-32 rounded-full border-2 border-blue-500/40 bg-gradient-to-b from-white via-blue-50/40 to-blue-100/30 flex flex-col items-center justify-center mx-auto shadow-lg shadow-blue-500/10 transition-all duration-300 hover:border-blue-600 hover:shadow-xl group">
+            {/* Outer subtle glow ring */}
+            <div className="absolute inset-[-4px] rounded-full border border-blue-400/20 pointer-events-none animate-pulse" />
+            <span className="w-3 h-3 rounded-full bg-[#1D4ED8] mb-2 shadow-sm shadow-blue-500/50" />
+            <span className="font-heading font-bold text-xs text-[#0B1220] text-center px-2 leading-tight">
               Intelligent Solution
             </span>
           </div>
 
-          {/* Branch Lines SVG */}
-          <div className="w-full h-14 relative my-1">
+          {/* Branch Lines SVG (Desktop) */}
+          <div className="manifesto-branch-line hidden md:block w-full h-14 relative my-2">
             <svg viewBox="0 0 900 60" preserveAspectRatio="none" className="w-full h-full">
               <path
                 d="M450 0 L150 60"
                 stroke={activeCategory === 'digital' ? '#1D4ED8' : '#CBD5E1'}
-                strokeWidth={activeCategory === 'digital' ? '2.5' : '1.2'}
+                strokeWidth={activeCategory === 'digital' ? '2.5' : '1.4'}
                 strokeDasharray={activeCategory === 'digital' ? 'none' : '4 3'}
                 className="transition-all duration-300"
               />
               <path
                 d="M450 0 L450 60"
                 stroke={activeCategory === 'iot' ? '#1D4ED8' : '#CBD5E1'}
-                strokeWidth={activeCategory === 'iot' ? '2.5' : '1.2'}
+                strokeWidth={activeCategory === 'iot' ? '2.5' : '1.4'}
                 strokeDasharray={activeCategory === 'iot' ? 'none' : '4 3'}
                 className="transition-all duration-300"
               />
               <path
                 d="M450 0 L750 60"
                 stroke={activeCategory === 'ai' ? '#1D4ED8' : '#CBD5E1'}
-                strokeWidth={activeCategory === 'ai' ? '2.5' : '1.2'}
+                strokeWidth={activeCategory === 'ai' ? '2.5' : '1.4'}
                 strokeDasharray={activeCategory === 'ai' ? 'none' : '4 3'}
                 className="transition-all duration-300"
               />
             </svg>
           </div>
 
+          {/* Mobile vertical spacer line */}
+          <div className="md:hidden w-0.5 h-8 bg-blue-300/60 mx-auto my-3" />
+
           {/* 3 Dial Category Cards */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-left mt-2">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8 text-left mt-2">
             {categories.map((cat) => {
               const isSelected = activeCategory === cat.id;
               return (
@@ -131,14 +231,20 @@ export const ManifestoSection = () => {
                   key={cat.id}
                   onClick={() => setActiveCategory(cat.id)}
                   onMouseEnter={() => setActiveCategory(cat.id)}
-                  className={`p-6 rounded-2xl cursor-pointer transition-all duration-300 border ${
+                  className={`manifesto-category-card p-6 rounded-2xl cursor-pointer transition-all duration-300 border ${
                     isSelected
-                      ? 'bg-blue-50/70 border-blue-200 shadow-md translate-y-[-2px]'
-                      : 'bg-transparent border-transparent hover:bg-slate-50'
+                      ? 'bg-blue-50/90 border-blue-400/60 shadow-lg shadow-blue-500/10 translate-y-[-3px]'
+                      : 'bg-white/80 border-slate-200/80 hover:border-blue-300 hover:bg-slate-50 shadow-sm'
                   }`}
                 >
-                  <div className="mb-4 transform transition-transform duration-300 group-hover:scale-110">
-                    {cat.icon}
+                  <div
+                    className={`manifesto-category-icon category-icon-${cat.id} mb-4 w-12 h-12 transform transition-transform duration-300 group-hover:scale-110`}
+                  >
+                    <img
+                      src={cat.icon}
+                      alt={`${cat.title} icon`}
+                      className="w-full h-full object-contain"
+                    />
                   </div>
                   <h3 className="font-heading font-semibold text-2xl text-[#1D4ED8] flex items-center justify-between">
                     <span>{cat.title}</span>

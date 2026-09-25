@@ -1,7 +1,8 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import { ArrowRight } from 'lucide-react';
 
-export const FinalCtaSection = ({ onOpenContact }) => {
+export const FinalCtaSection = () => {
   return (
     <section id="contact" className="relative bg-[#E7EEF9] text-[#0B1220] py-24 lg:py-28 overflow-hidden">
       {/* Constellation SVG in background */}
@@ -46,14 +47,13 @@ export const FinalCtaSection = ({ onOpenContact }) => {
             Let&apos;s turn your challenges into intelligent solutions.
           </p>
           <div className="flex flex-wrap items-center gap-3 md:justify-end">
-            <button
-              type="button"
-              onClick={onOpenContact}
+            <Link
+              to="/contact"
               className="inline-flex items-center gap-2 px-7 py-3.5 rounded-xl font-semibold text-base text-white bg-[#1D4ED8] hover:bg-[#1a44c2] transition-all duration-200 shadow-md shadow-blue-800/20 hover:-translate-y-0.5 cursor-pointer"
             >
               <span>Start Project</span>
               <ArrowRight className="w-4 h-4" />
-            </button>
+            </Link>
             <a
               href="mailto:connect@zeldapro.ai"
               className="inline-flex items-center gap-2 px-5 py-3.5 rounded-xl font-semibold text-sm text-[#1D4ED8] bg-white border border-blue-200 hover:bg-blue-50 transition-all duration-200 cursor-pointer"

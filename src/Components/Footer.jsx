@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-
+import logo from '../assets/Zeldalogo.JPG.png';
 export const Footer = () => {
   const [currentUtcTime, setCurrentUtcTime] = useState('');
 
@@ -22,12 +22,7 @@ export const Footer = () => {
           {/* Brand Info */}
           <div className="lg:col-span-4">
             <div className="flex items-center gap-2 mb-5">
-              <span className="font-heading font-extrabold text-3xl italic bg-linear-to-b from-[#EF4444] via-[#EF4444] via-50% to-[#3B82F6] bg-clip-text text-transparent leading-none">
-                Z
-              </span>
-              <span className="font-heading font-bold text-xs tracking-[0.14em] text-[#DC2626] -mt-0.5">
-                ELDAPRO
-              </span>
+              <img src={logo} alt="Zeldapro" className="h-8 w-auto" />
             </div>
 
             <address className="not-italic text-sm leading-relaxed text-white/65 max-w-sm mb-4">
