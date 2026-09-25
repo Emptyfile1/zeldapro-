@@ -2,7 +2,7 @@ import React, { useRef } from 'react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { useGSAP } from '@gsap/react';
-import visionImage from 'D:/vscode/reactapp/Zeldapro/zeldapro/src/assets/Archetecturingdata.png';
+import visionImage from '../assets/Archetecturingdata.png';
 gsap.registerPlugin(ScrollTrigger);
 
 export const VisionSection = () => {
