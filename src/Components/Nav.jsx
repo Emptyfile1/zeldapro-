@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Link, NavLink } from 'react-router-dom';
 import { Menu, X, ArrowUpRight } from 'lucide-react';
 import logo from '../assets/Zeldalogo.png';
@@ -6,12 +6,30 @@ import logo from '../assets/Zeldalogo.png';
 export const Navbar = ({ onOpenContact }) => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const [hidden, setHidden] = useState(false);
+  const lastScrollY = useRef(0);
 
   useEffect(() => {
-    const handleScroll = () => setScrolled(window.scrollY > 20);
-    window.addEventListener('scroll', handleScroll);
+    const handleScroll = () => {
+      const currentScrollY = window.scrollY;
+      setScrolled(currentScrollY > 20);
+
+      // Don't hide the navbar while the mobile menu is open, and don't
+      // hide it until the user has scrolled past a small threshold near the top.
+      if (mobileMenuOpen) {
+        setHidden(false);
+      } else if (currentScrollY > lastScrollY.current && currentScrollY > 80) {
+        setHidden(true); // scrolling down
+      } else {
+        setHidden(false); // scrolling up
+      }
+
+      lastScrollY.current = currentScrollY;
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
+  }, [mobileMenuOpen]);
 
   const navLinks = [
     { name: 'Home', to: '/' },
@@ -23,9 +41,9 @@ export const Navbar = ({ onOpenContact }) => {
   return (
     <header
       id="site-header"
-      className={`sticky top-0 z-50 transition-colors duration-200 bg-black/95 backdrop-blur-md border-b ${
+      className={`sticky top-0 z-50 transition-all duration-300 ease-in-out bg-black/95 backdrop-blur-md border-b ${
         scrolled ? 'border-white/10 shadow-lg shadow-black/20' : 'border-white/6'
-      }`}
+      } ${hidden ? '-translate-y-full' : 'translate-y-0'}`}
     >
       <nav className="max-w-[1240px] mx-auto px-6 sm:px-10 h-20 flex items-center justify-between">
         {/* Brand Logo */}

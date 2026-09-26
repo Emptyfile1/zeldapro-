@@ -372,45 +372,46 @@ export const WhyTrustUsSection = () => {
           </div>
 
           {/* 3 Asymmetric Stat Cards Matching Image 1 */}
-          <div className="relative w-full flex-1 flex flex-col lg:block mt-6 sm:mt-10 max-h-[560px]">
+          {/* 3 Stat Cards — CSS Grid ensures guaranteed spacing, no overlap */}
+<div className="relative w-full flex-1 grid grid-cols-1 sm:grid-cols-3 gap-6 sm:gap-6 lg:gap-8 mt-6 sm:mt-10 max-h-[560px] items-start">
 
-            {/* Top Center Card: 30% / Reduction in Operational Costs via AI */}
-            <div
-              className="stat-card-gradient rounded-[28px] p-6 sm:p-8 lg:p-10 flex flex-col justify-between transition-transform duration-300 hover:-translate-y-2 lg:absolute lg:left-1/2 lg:-translate-x-1/2 lg:top-0 w-full lg:w-[420px] xl:w-[440px] h-[220px] sm:h-[240px] lg:h-[260px] shadow-xl"
-            >
-              <div className="font-['Sora'] font-bold text-[56px] sm:text-[72px] lg:text-[84px] leading-none tracking-[-0.02em] text-[#0B1B3D]">
-                {stat2}%
-              </div>
-              <p className="font-['Manrope'] font-normal text-[18px] sm:text-[22px] lg:text-[24px] leading-[1.2] tracking-[-0.02em] text-black">
-                Reduction in Operational Costs via AI
-              </p>
-            </div>
+  {/* Bottom Left Card: 50,000+ / Hours of Manual Work Automated */}
+  <div
+    className="stat-card-gradient rounded-[24px] p-6 sm:p-7 flex flex-col justify-between transition-transform duration-300 hover:-translate-y-2 w-full max-w-[320px] mx-auto sm:mx-0 h-[190px] sm:h-[200px] lg:h-[210px] shadow-xl sm:mt-16 lg:mt-24"
+  >
+    <div className="font-['Sora'] font-bold text-[38px] sm:text-[46px] lg:text-[54px] leading-none tracking-[-0.02em] text-[#0B1B3D]">
+      {stat1 >= 50000 ? '50,000+' : `${stat1.toLocaleString()}+`}
+    </div>
+    <p className="font-['Manrope'] font-normal text-[15px] sm:text-[17px] lg:text-[18px] leading-[1.2] tracking-[-0.02em] text-black">
+      Hours of Manual Work Automated
+    </p>
+  </div>
 
-            {/* Bottom Left Card: 50,000+ / Hours of Manual Work Automated */}
-            <div
-              className="stat-card-gradient rounded-[28px] p-6 sm:p-8 lg:p-10 flex flex-col justify-between transition-transform duration-300 hover:-translate-y-2 lg:absolute lg:left-4 xl:left-8 lg:bottom-4 w-full lg:w-[440px] xl:w-[460px] h-[220px] sm:h-[240px] lg:h-[260px] shadow-xl mt-6 lg:mt-0"
-            >
-              <div className="font-['Sora'] font-bold text-[54px] sm:text-[68px] lg:text-[80px] leading-none tracking-[-0.02em] text-[#0B1B3D]">
-                {stat1 >= 50000 ? '50,000+' : `${stat1.toLocaleString()}+`}
-              </div>
-              <p className="font-['Manrope'] font-normal text-[18px] sm:text-[22px] lg:text-[24px] leading-[1.2] tracking-[-0.02em] text-black">
-                Hours of Manual Work Automated
-              </p>
-            </div>
+  {/* Top Center Card: 30% / Reduction in Operational Costs via AI */}
+  <div
+    className="stat-card-gradient rounded-[24px] p-6 sm:p-7 flex flex-col justify-between transition-transform duration-300 hover:-translate-y-2 w-full max-w-[320px] mx-auto h-[190px] sm:h-[200px] lg:h-[210px] shadow-xl"
+  >
+    <div className="font-['Sora'] font-bold text-[38px] sm:text-[46px] lg:text-[54px] leading-none tracking-[-0.02em] text-[#0B1B3D]">
+      {stat2}%
+    </div>
+    <p className="font-['Manrope'] font-normal text-[15px] sm:text-[17px] lg:text-[18px] leading-[1.2] tracking-[-0.02em] text-black">
+      Reduction in Operational Costs via AI
+    </p>
+  </div>
 
-            {/* Bottom Right Card: 80% / Faster Decision-Making Workflows */}
-            <div
-              className="stat-card-gradient rounded-[28px] p-6 sm:p-8 lg:p-10 flex flex-col justify-between transition-transform duration-300 hover:-translate-y-2 lg:absolute lg:right-4 xl:right-8 lg:bottom-4 w-full lg:w-[420px] xl:w-[440px] h-[220px] sm:h-[240px] lg:h-[260px] shadow-xl mt-6 lg:mt-0"
-            >
-              <div className="font-['Sora'] font-bold text-[56px] sm:text-[72px] lg:text-[84px] leading-none tracking-[-0.02em] text-[#0B1B3D]">
-                {stat3}%
-              </div>
-              <p className="font-['Manrope'] font-normal text-[18px] sm:text-[22px] lg:text-[24px] leading-[1.2] tracking-[-0.02em] text-black">
-                Faster Decision-Making Workflows
-              </p>
-            </div>
+  {/* Bottom Right Card: 80% / Faster Decision-Making Workflows */}
+  <div
+    className="stat-card-gradient rounded-[24px] p-6 sm:p-7 flex flex-col justify-between transition-transform duration-300 hover:-translate-y-2 w-full max-w-[320px] mx-auto sm:mx-0 sm:ml-auto h-[190px] sm:h-[200px] lg:h-[210px] shadow-xl sm:mt-16 lg:mt-24"
+  >
+    <div className="font-['Sora'] font-bold text-[38px] sm:text-[46px] lg:text-[54px] leading-none tracking-[-0.02em] text-[#0B1B3D]">
+      {stat3}%
+    </div>
+    <p className="font-['Manrope'] font-normal text-[15px] sm:text-[17px] lg:text-[18px] leading-[1.2] tracking-[-0.02em] text-black">
+      Faster Decision-Making Workflows
+    </p>
+  </div>
 
-          </div>
+</div>
         </div>
 
         {/* ========================================================= */}

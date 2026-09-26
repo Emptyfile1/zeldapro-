@@ -91,7 +91,7 @@ export const WhoWeAreSection = () => {
         <div className="text-center mb-20 sm:mb-28">
           <h2
             ref={titleRef}
-            className="font-['Sora'] font-semibold text-[42px] sm:text-[54px] lg:text-[64px] leading-[1.1] tracking-[-0.02em] text-black"
+            className="font-['Sora'] font-semibold text-[42px] sm:text-[54px] lg:text-[64px] leading-[1.1] tracking-[-0.02em] grad-text g-bkbl"
           >
             Who we are
           </h2>

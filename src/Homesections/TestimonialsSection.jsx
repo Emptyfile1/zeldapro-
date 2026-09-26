@@ -150,7 +150,8 @@ export const TestimonialsSection = () => {
           '-=0.25'
         );
 
-      // Trusted-by logos
+      // Trusted-by heading fade-in (the logo marquee itself scrolls continuously via CSS,
+      // so it's intentionally not part of this scroll-triggered reveal)
       gsap.from('.trusted-heading', {
         scrollTrigger: {
           trigger: '.trusted-heading',
@@ -160,18 +161,6 @@ export const TestimonialsSection = () => {
         opacity: 0,
         duration: 0.7,
         ease: 'power3.out',
-      });
-
-      gsap.from('.trusted-logo', {
-        scrollTrigger: {
-          trigger: '.trusted-grid',
-          start: 'top 85%',
-        },
-        y: 16,
-        opacity: 0,
-        duration: 0.6,
-        stagger: 0.08,
-        ease: 'power2.out',
       });
     },
     { scope: containerRef }
@@ -270,28 +259,31 @@ export const TestimonialsSection = () => {
           <span>Click to cycle reviews</span>
         </button>
 
-        {/* Trusted By Client Wordmark Grid */}
+        {/* Trusted By — Infinite Scrolling Logo Marquee */}
         <div className="mt-32 sm:mt-40 pt-12 border-t border-slate-300/60">
           <h3 className="trusted-heading font-heading font-bold text-2xl sm:text-3xl text-[#0B1220] mb-10">
             Trusted by
           </h3>
-          <div className="trusted-grid grid grid-cols-2 sm:grid-cols-3 gap-y-7 gap-x-10 max-w-3xl mx-auto items-center">
-            {clientLogos.map((client) =>
-              client.isPill ? (
-                <div key={client.name} className="trusted-logo flex justify-center">
-                  <span className="font-heading font-bold text-base sm:text-lg bg-[#0B1220] text-white px-5 py-2 rounded-md shadow-sm">
+
+          <div className="relative w-full overflow-hidden [mask-image:linear-gradient(to_right,transparent,black_12%,black_88%,transparent)]">
+            <div className="trusted-grid flex w-max gap-14 sm:gap-20 animate-marquee hover:[animation-play-state:paused]">
+              {[...clientLogos, ...clientLogos].map((client, idx) =>
+                client.isPill ? (
+                  <div key={`${client.name}-${idx}`} className="shrink-0 flex justify-center">
+                    <span className="font-heading font-bold text-base sm:text-lg bg-[#0B1220] text-white px-5 py-2 rounded-md shadow-sm whitespace-nowrap">
+                      {client.name}
+                    </span>
+                  </div>
+                ) : (
+                  <span
+                    key={`${client.name}-${idx}`}
+                    className="shrink-0 font-heading font-bold text-xl sm:text-2xl text-[#0B1220] tracking-wide whitespace-nowrap"
+                  >
                     {client.name}
                   </span>
-                </div>
-              ) : (
-                <span
-                  key={client.name}
-                  className="trusted-logo font-heading font-bold text-xl sm:text-2xl text-[#0B1220] tracking-wide"
-                >
-                  {client.name}
-                </span>
-              )
-            )}
+                )
+              )}
+            </div>
           </div>
         </div>
       </div>

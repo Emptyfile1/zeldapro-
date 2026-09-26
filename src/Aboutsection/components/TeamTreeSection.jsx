@@ -516,11 +516,6 @@ export const TeamTreeSection = () => {
           {showTier3 && (
             <div className="w-full mt-20 sm:mt-32 lg:mt-48 relative z-20 animate-in fade-in slide-in-from-bottom-6 duration-500">
               {/* Group label */}
-              <div className="text-center mb-10">
-                <span className="font-['JetBrains_Mono'] text-xs uppercase tracking-[0.2em] text-blue-700 bg-blue-50 px-4 py-1.5 rounded-full border border-blue-200/60 font-semibold">
-                  // SPECIALIZED ENGINEERING SQUADS
-                </span>
-              </div>
 
               {/* 3 Columns matching the 3 leads above, each containing 2 child cards */}
               <div className="grid grid-cols-1 lg:grid-cols-3 gap-12 lg:gap-8 items-start">
