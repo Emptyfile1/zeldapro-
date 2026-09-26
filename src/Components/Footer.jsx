@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import logo from '../assets/Zeldalogo.JPG.png';
+import logo from '../assets/Zeldalogo.png';
 export const Footer = () => {
   const [currentUtcTime, setCurrentUtcTime] = useState('');
 
@@ -117,7 +117,7 @@ export const Footer = () => {
 
         {/* Bottom Row */}
         <div className="pt-6 flex flex-col sm:flex-row justify-between items-center gap-4 text-xs font-mono text-white/50">
-          <div>&copy; 2026 ZELDAPRO RESEARCH LAB. ALL RIGHTS RESERVED.</div>
+          <div>&copy; 2026 Zeldapro Consultancy Pvt Ltd. ALL RIGHTS RESERVED.</div>
           <div className="flex flex-wrap items-center gap-6 text-[11px]">
             <span>LAT 19.06° / LON 72.86°</span>
             <span>ENCRYPTION: AES-256</span>

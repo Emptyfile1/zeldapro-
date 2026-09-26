@@ -146,7 +146,7 @@ export const Footer = ({ onOpenConnect, onOpenArchive }) => {
         {/* Bottom Bar Separator */}
         <div className="border-t border-[#E5E0D8]/30 pt-8 mt-auto flex flex-col md:flex-row items-center justify-between gap-4 text-neutral-400 font-['JetBrains_Mono'] text-[11px] sm:text-[12px] tracking-wider">
           <div className="uppercase">
-            © 2025 ZELDAPRO RESEARCH LAB. ALL RIGHTS RESERVED.
+            © 2025 Zeldapro Consultancy Pvt Ltd. ALL RIGHTS RESERVED.
           </div>
           <div className="flex flex-wrap items-center gap-4 sm:gap-6 uppercase">
             <span>LAT 19.06° / LON 72.86°</span>

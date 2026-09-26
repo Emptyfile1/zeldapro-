@@ -1,11 +1,18 @@
 import React, { useRef } from 'react';
-import { ArrowRight } from 'lucide-react';
 import gsap from 'gsap';
 import { useGSAP } from '@gsap/react';
+import { useNavigate } from 'react-router-dom';
 
-export const Hero = ({ onOpenContact }) => {
+export const Hero = () => {
+  const navigate = useNavigate();
   const containerRef = useRef(null);
   const diagramRef = useRef(null);
+
+  // Navigates to a separate route/page instead of opening a popup/modal.
+  // Update these paths to match your actual routes, e.g. "/services", "/contact"
+  const goToPage = (path) => {
+    navigate(path);
+  };
 
   useGSAP(
     () => {
@@ -49,6 +56,7 @@ export const Hero = ({ onOpenContact }) => {
             stagger: 0.1,
             duration: 0.6,
             ease: 'back.out(1.4)',
+            clearProps: 'opacity,transform',
           },
           '-=0.3'
         )
@@ -180,21 +188,21 @@ export const Hero = ({ onOpenContact }) => {
             A premium system that designs, launches, and scales digital experiences with confidence.
           </p>
 
-          <div className="flex flex-wrap items-center gap-4 mt-8">
-            <a
-              href="#work"
-              id="hero-work-btn"
-              className="hero-cta-btn inline-flex items-center justify-center gap-2 px-7 py-3.5 rounded-xl font-semibold text-base text-white bg-[#1D4ED8] hover:bg-[#1a44c2] transition-all duration-200 shadow-lg shadow-blue-900/30 hover:shadow-blue-900/50 hover:-translate-y-0.5 cursor-pointer"
-            >
-              <span>See our work</span>
-              <ArrowRight className="w-4 h-4" />
-            </a>
-
+          <div
+            className="mt-8 flex flex-wrap items-center gap-4 sm:gap-6"
+          >
+            {/* "See our work" button - #1D4ED8 -> navigates to /services page */}
             <button
-              type="button"
-              onClick={onOpenContact}
-              id="hero-connect-btn"
-              className="hero-cta-btn inline-flex items-center justify-center px-7 py-3.5 rounded-xl font-semibold text-base text-white bg-[#0B1B3D] hover:bg-[#0e2350] border border-blue-900/40 transition-all duration-200 hover:-translate-y-0.5 cursor-pointer"
+              onClick={() => goToPage('/services')}
+              className="hero-cta-btn w-[150px] h-[50px] bg-[#1D4ED8] hover:bg-blue-800 active:scale-95 text-white font-['Manrope'] font-normal text-[20px] leading-[40px] flex items-center justify-center rounded-[10px] transition-all duration-200 shadow-md shadow-blue-600/30 hover:shadow-lg hover:shadow-blue-600/40 cursor-pointer"
+            >
+              See our work
+            </button>
+
+            {/* "Lets Connect" button - #0B1B3D -> navigates to /contact page */}
+            <button
+              onClick={() => goToPage('/contact')}
+              className="hero-cta-btn w-[150px] h-[50px] bg-[#0B1B3D] hover:bg-neutral-900 active:scale-95 text-white font-['Manrope'] font-normal text-[20px] leading-[40px] flex items-center justify-center rounded-[10px] transition-all duration-200 shadow-md shadow-neutral-900/30 hover:shadow-lg hover:shadow-neutral-900/40 cursor-pointer"
             >
               Lets Connect
             </button>

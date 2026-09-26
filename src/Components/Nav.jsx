@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link, NavLink } from 'react-router-dom';
 import { Menu, X, ArrowUpRight } from 'lucide-react';
-import logo from '../assets/Zeldalogo.JPG.png';
+import logo from '../assets/Zeldalogo.png';
 
 export const Navbar = ({ onOpenContact }) => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);

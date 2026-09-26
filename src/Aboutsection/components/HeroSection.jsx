@@ -1,7 +1,9 @@
 import React, { useEffect, useRef } from 'react';
 import gsap from 'gsap';
+import { useNavigate } from 'react-router-dom';
 
-export const HeroSection = ({ onSeeWork, onConnect }) => {
+export const HeroSection = () => {
+  const navigate = useNavigate();
   const containerRef = useRef(null);
   const headlineRef = useRef(null);
   const subtitleRef = useRef(null);
@@ -32,6 +34,12 @@ export const HeroSection = ({ onSeeWork, onConnect }) => {
 
     return () => ctx.revert();
   }, []);
+
+  // Navigates to a separate route/page instead of opening a popup/modal.
+  // Update these paths to match your actual routes, e.g. "/services", "/contact"
+  const goToPage = (path) => {
+    navigate(path);
+  };
 
   return (
     <section
@@ -78,17 +86,17 @@ export const HeroSection = ({ onSeeWork, onConnect }) => {
             ref={buttonsRef}
             className="mt-8 sm:mt-11 flex flex-wrap items-center gap-4 sm:gap-6"
           >
-            {/* "See our work" button - #1D4ED8 */}
+            {/* "See our work" button - #1D4ED8 -> navigates to /services page */}
             <button
-              onClick={onSeeWork}
+              onClick={() => goToPage('/services')}
               className="w-[150px] h-[50px] bg-[#1D4ED8] hover:bg-blue-800 active:scale-95 text-white font-['Manrope'] font-normal text-[20px] leading-[40px] flex items-center justify-center rounded-[10px] transition-all duration-200 shadow-md shadow-blue-600/30 hover:shadow-lg hover:shadow-blue-600/40 cursor-pointer"
             >
               See our work
             </button>
 
-            {/* "Lets Connect" button - #0B1B3D */}
+            {/* "Lets Connect" button - #0B1B3D -> navigates to /contact page */}
             <button
-              onClick={onConnect}
+              onClick={() => goToPage('/contact')}
               className="w-[150px] h-[50px] bg-[#0B1B3D] hover:bg-neutral-900 active:scale-95 text-white font-['Manrope'] font-normal text-[20px] leading-[40px] flex items-center justify-center rounded-[10px] transition-all duration-200 shadow-md shadow-neutral-900/30 hover:shadow-lg hover:shadow-neutral-900/40 cursor-pointer"
             >
               Lets Connect
