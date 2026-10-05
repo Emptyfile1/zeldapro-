@@ -1,11 +1,12 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState, useCallback } from 'react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import { Mail, X, Layers, ChevronDown, ChevronUp } from 'lucide-react';
-import { FaLinkedinIn, FaTwitter } from 'react-icons/fa';
+import { Mail, X, Layers, ChevronDown, ChevronUp, Sparkles, UserCheck, Link2, AtSign } from 'lucide-react';
+// then use <Link2 /> and <AtSign /> in the modal instead of Linkedin / Twitter
+
 gsap.registerPlugin(ScrollTrigger);
 
-// Complete 10-node hierarchy: Tier 1 (Root), Tier 2 (3 Directors), Tier 3 (6 Specialists below)
+// Complete 10-node hierarchy: Tier 1 (Root), Tier 2 (3 Functional Directors), Tier 3 (6 Specialists Below)
 const teamMembers = [
   // --- Tier 1: CEO ---
   {
@@ -69,7 +70,7 @@ const teamMembers = [
     skills: ['RTOS Firmware', 'Zigbee & Thread', 'Zero-Latency Telemetry'],
   },
 
-  // --- Tier 3: 6 Sub-Cards (The Cards Below the 3 leads) ---
+  // --- Tier 3: 6 Sub-Cards (Cards Below the 3 Leads) ---
   // Sub-team under Digital Infrastructure (Left):
   {
     id: 'infra-arch',
@@ -91,7 +92,7 @@ const teamMembers = [
     name: 'Name',
     realName: 'Aria Montgomery',
     role: 'CEO',
-    realRole: 'Cloud Security & DevOps Lead',
+    realRole: 'Cloud Security Lead',
     tier: 3,
     parentBranch: 'eng-lead',
     department: 'Digital Infrastructure',
@@ -102,7 +103,7 @@ const teamMembers = [
     skills: ['Zero-Trust Enclaves', 'Terraform CI/CD', 'Kubernetes'],
   },
 
-  // Sub-team under AI (Middle):
+  // Sub-team under AI Research (Middle):
   {
     id: 'ai-ml',
     name: 'Name',
@@ -112,11 +113,11 @@ const teamMembers = [
     tier: 3,
     parentBranch: 'ai-lead',
     department: 'Artificial Intelligence',
-    image: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&w=600&q=85',
-    bio: 'Optimizing deep learning models for millisecond edge inference across heterogeneous neural compute engines.',
-    discipline: 'Model Compression & Edge Acceleration',
-    quote: 'Intelligent systems thrive when efficiency meets precision.',
-    skills: ['ONNX Runtime', 'CUDA Optimization', 'Quantized Weights'],
+    image: 'https://images.unsplash.com/photo-1519345182560-3f2917c472ef?auto=format&fit=crop&w=600&q=85',
+    bio: 'Fine-tuning transformer weights for real-time edge devices with sub-10 millisecond response latencies.',
+    discipline: 'Neural Quantization & LLM Distillation',
+    quote: 'Speed and precision are not mutually exclusive.',
+    skills: ['ONNX Runtime', 'CUDA Optimization', 'Vector Databases'],
   },
   {
     id: 'ai-vision',
@@ -167,89 +168,234 @@ const teamMembers = [
   },
 ];
 
-// Reusable card photo component matching the Figma rounded 24px photo style
-const MemberPhoto = ({ src, alt, className = '' }) => {
-  return (
-    <div className={`relative w-[200px] h-[200px] rounded-[24px] overflow-hidden shadow-[4px_4px_10px_rgba(0,0,0,0.25)] bg-[#1e232d] ${className}`}>
-      <img
-        src={src}
-        alt={alt}
-        className="w-full h-full object-cover object-top grayscale-[12%] contrast-105 brightness-95 transition-transform duration-500 group-hover:scale-105"
-      />
-      <div className="absolute inset-0 ring-1 ring-white/20 rounded-[24px] pointer-events-none" />
-      <div className="absolute inset-0 bg-gradient-to-t from-black/35 via-transparent to-transparent pointer-events-none" />
-    </div>
-  );
-};
+// Helper: generate smooth S-curve cubic Bezier path between two coordinate points
+function createSmoothCurve(p1, p2) {
+  if (!p1 || !p2) return '';
+  const dy = p2.y - p1.y;
+  // Dynamic handle offset proportional to vertical separation
+  const handleOffset = Math.max(30, Math.min(dy * 0.5, 90));
+  const cp1y = p1.y + handleOffset;
+  const cp2y = p2.y - handleOffset;
+  return `M ${p1.x.toFixed(1)} ${p1.y.toFixed(1)} C ${p1.x.toFixed(1)} ${cp1y.toFixed(1)}, ${p2.x.toFixed(1)} ${cp2y.toFixed(1)}, ${p2.x.toFixed(1)} ${p2.y.toFixed(1)}`;
+}
 
 export const TeamTreeSection = () => {
   const sectionRef = useRef(null);
   const titleRef = useRef(null);
   const treeContainerRef = useRef(null);
 
+  // DOM node references for pixel-perfect dynamic SVG line anchor points
+  const tier1CardRef = useRef(null);
+  const tier2CardRefs = [useRef(null), useRef(null), useRef(null)];
+  const tier3CardRefs = [
+    useRef(null), useRef(null), // Left squad (Marcus, Aria)
+    useRef(null), useRef(null), // Mid squad (David, Sophia)
+    useRef(null), useRef(null), // Right squad (Leo, Zara)
+  ];
+
   const [selectedMember, setSelectedMember] = useState(null);
   const [showRealNames, setShowRealNames] = useState(false);
   const [showTier3, setShowTier3] = useState(true);
 
+  // Computed SVG lines state
+  const [svgLines, setSvgLines] = useState([]);
+  const [svgDimensions, setSvgDimensions] = useState({ width: 1200, height: 900 });
+
+  // Recalculate dynamic connector lines based on actual rendered card coordinates
+  const updateConnectorLines = useCallback(() => {
+    if (!treeContainerRef.current || !tier1CardRef.current) return;
+
+    const containerRect = treeContainerRef.current.getBoundingClientRect();
+    if (containerRect.width === 0 || containerRect.height === 0) return;
+
+    setSvgDimensions({
+      width: Math.round(containerRect.width),
+      height: Math.round(containerRect.height),
+    });
+
+    const getAnchors = (el) => {
+      if (!el) return null;
+      const rect = el.getBoundingClientRect();
+      return {
+        topCenter: {
+          x: rect.left + rect.width / 2 - containerRect.left,
+          y: rect.top - containerRect.top,
+        },
+        bottomCenter: {
+          x: rect.left + rect.width / 2 - containerRect.left,
+          y: rect.bottom - containerRect.top,
+        },
+      };
+    };
+
+    const t1Anchors = getAnchors(tier1CardRef.current);
+    const t2Anchors = tier2CardRefs.map((r) => getAnchors(r.current));
+    const t3Anchors = tier3CardRefs.map((r) => getAnchors(r.current));
+
+    if (!t1Anchors) return;
+
+    const lines = [];
+
+    // --- TIER 1 TO TIER 2 LINES ---
+    t2Anchors.forEach((childAnchor, idx) => {
+      if (childAnchor) {
+        const pathData = createSmoothCurve(t1Anchors.bottomCenter, childAnchor.topCenter);
+        lines.push({
+          id: `t1-to-t2-${idx}`,
+          tier: '1-to-2',
+          from: t1Anchors.bottomCenter,
+          to: childAnchor.topCenter,
+          d: pathData,
+          dur: `${3.6 + idx * 0.3}s`,
+        });
+      }
+    });
+
+    // --- TIER 2 TO TIER 3 LINES (CARDS BELOW) ---
+    if (showTier3) {
+      // Squad 1: Under Left Lead (t2[0] -> t3[0], t3[1])
+      if (t2Anchors[0]) {
+        if (t3Anchors[0]) {
+          lines.push({
+            id: 't2-0-to-t3-0',
+            tier: '2-to-3',
+            from: t2Anchors[0].bottomCenter,
+            to: t3Anchors[0].topCenter,
+            d: createSmoothCurve(t2Anchors[0].bottomCenter, t3Anchors[0].topCenter),
+            dur: '4.0s',
+          });
+        }
+        if (t3Anchors[1]) {
+          lines.push({
+            id: 't2-0-to-t3-1',
+            tier: '2-to-3',
+            from: t2Anchors[0].bottomCenter,
+            to: t3Anchors[1].topCenter,
+            d: createSmoothCurve(t2Anchors[0].bottomCenter, t3Anchors[1].topCenter),
+            dur: '4.2s',
+          });
+        }
+      }
+
+      // Squad 2: Under Middle Lead (t2[1] -> t3[2], t3[3])
+      if (t2Anchors[1]) {
+        if (t3Anchors[2]) {
+          lines.push({
+            id: 't2-1-to-t3-2',
+            tier: '2-to-3',
+            from: t2Anchors[1].bottomCenter,
+            to: t3Anchors[2].topCenter,
+            d: createSmoothCurve(t2Anchors[1].bottomCenter, t3Anchors[2].topCenter),
+            dur: '3.8s',
+          });
+        }
+        if (t3Anchors[3]) {
+          lines.push({
+            id: 't2-1-to-t3-3',
+            tier: '2-to-3',
+            from: t2Anchors[1].bottomCenter,
+            to: t3Anchors[3].topCenter,
+            d: createSmoothCurve(t2Anchors[1].bottomCenter, t3Anchors[3].topCenter),
+            dur: '4.1s',
+          });
+        }
+      }
+
+      // Squad 3: Under Right Lead (t2[2] -> t3[4], t3[5])
+      if (t2Anchors[2]) {
+        if (t3Anchors[4]) {
+          lines.push({
+            id: 't2-2-to-t3-4',
+            tier: '2-to-3',
+            from: t2Anchors[2].bottomCenter,
+            to: t3Anchors[4].topCenter,
+            d: createSmoothCurve(t2Anchors[2].bottomCenter, t3Anchors[4].topCenter),
+            dur: '3.9s',
+          });
+        }
+        if (t3Anchors[5]) {
+          lines.push({
+            id: 't2-2-to-t3-5',
+            tier: '2-to-3',
+            from: t2Anchors[2].bottomCenter,
+            to: t3Anchors[5].topCenter,
+            d: createSmoothCurve(t2Anchors[2].bottomCenter, t3Anchors[5].topCenter),
+            dur: '4.3s',
+          });
+        }
+      }
+    }
+
+    setSvgLines(lines);
+  }, [showTier3]);
+
+  // Handle ResizeObserver, window resize, and layout changes
+  useEffect(() => {
+    // Initial calculation
+    const timer = setTimeout(() => {
+      updateConnectorLines();
+    }, 50);
+
+    const handleResize = () => {
+      updateConnectorLines();
+    };
+
+    window.addEventListener('resize', handleResize);
+
+    let resizeObserver = null;
+    if (typeof ResizeObserver !== 'undefined' && treeContainerRef.current) {
+      resizeObserver = new ResizeObserver(() => {
+        updateConnectorLines();
+      });
+      resizeObserver.observe(treeContainerRef.current);
+    }
+
+    return () => {
+      clearTimeout(timer);
+      window.removeEventListener('resize', handleResize);
+      if (resizeObserver) resizeObserver.disconnect();
+    };
+  }, [updateConnectorLines, showTier3, showRealNames]);
+
+  // Smooth line tracking during expand/collapse transition
+  useEffect(() => {
+    let frameId;
+    let startTime = performance.now();
+    const duration = 500; // ms
+
+    const step = (now) => {
+      updateConnectorLines();
+      if (now - startTime < duration) {
+        frameId = requestAnimationFrame(step);
+      }
+    };
+    frameId = requestAnimationFrame(step);
+
+    return () => cancelAnimationFrame(frameId);
+  }, [showTier3, updateConnectorLines]);
+
+  // Entrance animations using GSAP (Title only - Cards remain permanently visible)
   useEffect(() => {
     const ctx = gsap.context(() => {
       // Title Entrance
-      gsap.from(titleRef.current, {
-        scrollTrigger: {
-          trigger: titleRef.current,
-          start: 'top 85%',
-        },
-        y: 40,
-        opacity: 0,
-        duration: 0.9,
-        ease: 'power3.out',
-      });
-
-      // SVG lines drawing effect
-      const paths = sectionRef.current?.querySelectorAll('.tree-svg-path') || [];
-      paths.forEach((path) => {
-        const length = path.getTotalLength ? path.getTotalLength() : 600;
-        gsap.set(path, {
-          strokeDasharray: length,
-          strokeDashoffset: length,
-        });
-
-        gsap.to(path, {
+      if (titleRef.current) {
+        gsap.from(titleRef.current, {
           scrollTrigger: {
-            trigger: treeContainerRef.current,
-            start: 'top 75%',
+            trigger: titleRef.current,
+            start: 'top 85%',
           },
-          strokeDashoffset: 0,
-          duration: 1.5,
-          ease: 'power2.out',
+          y: 25,
+          opacity: 0,
+          duration: 0.7,
+          ease: 'power3.out',
         });
-      });
-
-      // Staggered card entrance with safety fallback
-      const cards = sectionRef.current?.querySelectorAll('.tree-node-card') || [];
-      if (cards.length > 0) {
-        gsap.fromTo(
-          cards,
-          { y: 40, opacity: 0.3 },
-          {
-            scrollTrigger: {
-              trigger: treeContainerRef.current,
-              start: 'top 75%',
-            },
-            y: 0,
-            opacity: 1,
-            duration: 0.8,
-            stagger: 0.08,
-            ease: 'power2.out',
-          }
-        );
       }
 
       ScrollTrigger.refresh();
     }, sectionRef);
 
     return () => ctx.revert();
-  }, [showTier3]);
+  }, []);
 
   const getDisplayName = (member) => {
     return showRealNames ? member.realName : member.name;
@@ -259,9 +405,9 @@ export const TeamTreeSection = () => {
     return showRealNames ? (member.realRole || member.role) : member.role;
   };
 
-  // Filter members by tier
+  // Split members
   const tier1Member = teamMembers[0]; // CEO
-  const tier2Members = teamMembers.slice(1, 4); // 3 Directors
+  const tier2Members = teamMembers.slice(1, 4); // 3 Leads
   const tier3Left = teamMembers.slice(4, 6); // 2 under Digital Infrastructure
   const tier3Mid = teamMembers.slice(6, 8); // 2 under AI
   const tier3Right = teamMembers.slice(8, 10); // 2 under Connected Systems
@@ -269,241 +415,223 @@ export const TeamTreeSection = () => {
   return (
     <section
       ref={sectionRef}
-      className="relative w-full bg-white pt-24 pb-36 px-4 sm:px-8 overflow-hidden"
+      className="relative w-full bg-white pt-20 sm:pt-24 pb-32 sm:pb-40 px-4 sm:px-6 lg:px-8 overflow-hidden select-none"
     >
-      <div className="max-w-[1725px] mx-auto flex flex-col items-center">
-        {/* Section Heading matching Figma: Sora 64px, weight 600 */}
-        <div className="text-center mb-12 sm:mb-16">
+      <div className="max-w-[1400px] mx-auto flex flex-col items-center">
+        {/* Section Heading matching Figma: Sora, semibold */}
+        <div className="text-center mb-10 sm:mb-14">
           <h2
             ref={titleRef}
-            className="font-['Sora'] font-semibold text-[38px] sm:text-[52px] lg:text-[64px] leading-[1.15] lg:leading-[70px] tracking-[-0.02em] text-black"
+            className="font-['Sora'] font-semibold text-[34px] sm:text-[46px] lg:text-[56px] leading-[1.15] tracking-[-0.02em] text-slate-950"
           >
             The People Behind The Screen
           </h2>
 
-          {/* Interactive view controls */}
-          <div className="flex flex-wrap items-center justify-center gap-3 mt-4">
-            <span className="text-xs font-['JetBrains_Mono'] uppercase tracking-widest text-slate-600">
-              Interactive Hierarchy
+          {/* Interactive controls */}
+          <div className="flex flex-wrap items-center justify-center gap-2.5 sm:gap-3 mt-4">
+            <span className="text-[11px] font-['JetBrains_Mono'] uppercase tracking-widest text-slate-500 font-medium">
+              Org Architecture
             </span>
-            <div className="h-4 w-px bg-slate-300 hidden sm:block" />
+            <div className="h-3.5 w-px bg-slate-300 hidden sm:block" />
             <button
               onClick={() => setShowRealNames(!showRealNames)}
-              className="text-[11px] font-['JetBrains_Mono'] px-3 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 transition-colors border border-slate-300 cursor-pointer"
+              className="text-[11px] font-['JetBrains_Mono'] px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 transition-all border border-slate-200/90 cursor-pointer flex items-center gap-1.5 shadow-xs"
             >
-              Mode: {showRealNames ? 'Team Profiles' : 'Figma Layout (Name/CEO)'}
+              <UserCheck className="w-3.5 h-3.5 text-blue-600" />
+              <span>Mode: {showRealNames ? 'Team Profiles' : 'Figma Spec (Name/CEO)'}</span>
             </button>
             <button
               onClick={() => setShowTier3(!showTier3)}
-              className="text-[11px] font-['JetBrains_Mono'] px-3 py-1 rounded-lg bg-blue-50 hover:bg-blue-100 text-blue-700 transition-colors border border-blue-200 cursor-pointer flex items-center gap-1"
+              className={`text-[11px] font-['JetBrains_Mono'] px-3.5 py-1.5 rounded-lg transition-all border cursor-pointer flex items-center gap-1.5 shadow-xs ${
+                showTier3
+                  ? 'bg-blue-50 hover:bg-blue-100 text-blue-700 border-blue-200'
+                  : 'bg-slate-100 hover:bg-slate-200 text-slate-700 border-slate-200'
+              }`}
             >
-              <Layers className="w-3.5 h-3.5" />
-              <span>{showTier3 ? 'Show Less' : 'Show All Cards Below'}</span>
+              <Layers className="w-3.5 h-3.5 text-blue-600" />
+              <span>{showTier3 ? 'Show Less (4 Nodes)' : 'Expand Tree (10 Nodes)'}</span>
               {showTier3 ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />}
             </button>
           </div>
         </div>
 
-        {/* Tree Container */}
+        {/* Tree Interactive Hierarchy Container */}
         <div
           ref={treeContainerRef}
-          className="relative w-full max-w-[1480px] flex flex-col items-center min-h-[1050px]"
+          className="relative w-full max-w-[1240px] flex flex-col items-center"
         >
-
           {/* ========================================================= */}
-          {/* TIER 1: Top Leader Card (CEO)                            */}
-          {/* ========================================================= */}
-          <div className="relative z-30 mb-8 sm:mb-12">
-            <div
-              onClick={() => setSelectedMember(tier1Member)}
-              className="tree-node-card w-[300px] h-[357px] team-card-glass rounded-[24px] p-[30px_56px_37px] flex flex-col items-center gap-[24px] cursor-pointer group transition-all duration-300 hover:-translate-y-2 hover:shadow-[0_12px_30px_rgba(29,78,216,0.3)] hover:border-blue-300"
-            >
-              <div className="transition-transform duration-300 group-hover:scale-[1.03]">
-                <MemberPhoto src={tier1Member.image} alt={tier1Member.name} />
-              </div>
-
-              <div className="flex flex-col items-center gap-0 -mt-2 text-center">
-                <span className="font-['Sora'] font-normal text-[24px] leading-[28px] text-black [text-shadow:0px_4px_4px_rgba(0,0,0,0.25)]">
-                  {getDisplayName(tier1Member)}
-                </span>
-                <span className="font-['Sora'] font-normal text-[22px] sm:text-[24px] leading-[36px] tracking-[-0.02em] text-[#808080] [text-shadow:0px_4px_4px_rgba(0,0,0,0.25)]">
-                  {getDisplayRole(tier1Member)}
-                </span>
-              </div>
-
-              <div className="absolute top-4 right-4 w-2.5 h-2.5 rounded-full bg-blue-600 animate-pulse" />
-            </div>
-          </div>
-
-          {/* ========================================================= */}
-          {/* SVG CONNECTOR LINES: TIER 1 -> TIER 2 & TIER 2 -> TIER 3  */}
+          {/* DYNAMIC SVG CONNECTOR LINES                               */}
+          {/* Unified styling for Tier 1->2 AND Tier 2->3 with 100%     */}
+          {/* mathematically aligned anchors at card centers!           */}
           {/* ========================================================= */}
           <div className="hidden lg:block absolute inset-0 pointer-events-none z-10 w-full h-full">
             <svg
-              className="w-full h-full"
-              viewBox="0 0 1480 1450"
+              className="w-full h-full overflow-visible"
+              width={svgDimensions.width}
+              height={svgDimensions.height}
+              viewBox={`0 0 ${svgDimensions.width} ${svgDimensions.height}`}
               fill="none"
-              preserveAspectRatio="xMidYMid meet"
             >
               <defs>
-                <filter id="treeLineShadow" x="-20%" y="-20%" width="140%" height="140%">
-                  <feDropShadow dx="0" dy="4" stdDeviation="4" floodOpacity="0.22" />
+                {/* Unified subtle drop shadow for depth */}
+                <filter id="unifiedLineShadow" x="-10%" y="-10%" width="120%" height="120%">
+                  <feDropShadow dx="0" dy="2" stdDeviation="2.5" floodColor="#0F2C59" floodOpacity="0.14" />
+                </filter>
+
+                {/* Sleek uniform branch gradient */}
+                <linearGradient id="treeBranchGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+                  <stop offset="0%" stopColor="#0F2C59" />
+                  <stop offset="100%" stopColor="#1D4ED8" />
+                </linearGradient>
+
+                {/* Node glow filter */}
+                <filter id="nodeGlow" x="-50%" y="-50%" width="200%" height="200%">
+                  <feGaussianBlur stdDeviation="2" result="blur" />
+                  <feComposite in="SourceGraphic" in2="blur" operator="over" />
                 </filter>
               </defs>
 
-              {/* --- BRANCHES FROM TIER 1 TO TIER 2 --- */}
-              {/* Branch 1: Top to Left Director (740, 360) -> (245, 520) */}
-              <path
-                className="tree-svg-path"
-                d="M 740 360 C 740 440, 560 440, 420 465 C 310 485, 245 490, 245 520"
-                stroke="#0F2C59"
-                strokeWidth="4"
-                strokeLinecap="round"
-                fill="none"
-                filter="url(#treeLineShadow)"
-              />
-
-              {/* Branch 2: Top to Middle Director (740, 360) -> (740, 600) */}
-              <path
-                className="tree-svg-path"
-                d="M 740 360 C 740 470, 780 490, 770 540 C 760 575, 740 580, 740 600"
-                stroke="#0F2C59"
-                strokeWidth="4"
-                strokeLinecap="round"
-                fill="none"
-                filter="url(#treeLineShadow)"
-              />
-
-              {/* Branch 3: Top to Right Director (740, 360) -> (1235, 530) */}
-              <path
-                className="tree-svg-path"
-                d="M 740 360 C 740 440, 920 440, 1060 465 C 1170 485, 1235 495, 1235 530"
-                stroke="#0F2C59"
-                strokeWidth="4"
-                strokeLinecap="round"
-                fill="none"
-                filter="url(#treeLineShadow)"
-              />
-
-              {/* --- BRANCHES FROM TIER 2 TO TIER 3 (CARDS BELOW) --- */}
-              {showTier3 && (
-                <>
-                  {/* From Left Lead (245, 880) to Sub-Cards 1 & 2 */}
+              {/* Render dynamic curves with IDENTICAL visual styling */}
+              {svgLines.map((line) => (
+                <g key={line.id} className="transition-opacity duration-300">
+                  {/* Subtle ambient blur background trace */}
                   <path
-                    className="tree-svg-path"
-                    d="M 245 880 C 245 940, 130 940, 130 990"
-                    stroke="#1D4ED8"
-                    strokeWidth="3.5"
+                    d={line.d}
+                    stroke="#93C5FD"
+                    strokeWidth="5"
+                    strokeOpacity="0.25"
                     strokeLinecap="round"
-                    strokeDasharray="6 4"
-                    fill="none"
-                  />
-                  <path
-                    className="tree-svg-path"
-                    d="M 245 880 C 245 940, 360 940, 360 990"
-                    stroke="#1D4ED8"
-                    strokeWidth="3.5"
-                    strokeLinecap="round"
-                    strokeDasharray="6 4"
                     fill="none"
                   />
 
-                  {/* From Middle Lead (740, 960) to Sub-Cards 3 & 4 */}
+                  {/* Primary sharp connector line (Identical 2.5px width and gradient) */}
                   <path
-                    className="tree-svg-path"
-                    d="M 740 960 C 740 1010, 625 1010, 625 1060"
-                    stroke="#1D4ED8"
-                    strokeWidth="3.5"
+                    d={line.d}
+                    stroke="url(#treeBranchGrad)"
+                    strokeWidth="2.5"
                     strokeLinecap="round"
-                    strokeDasharray="6 4"
                     fill="none"
-                  />
-                  <path
-                    className="tree-svg-path"
-                    d="M 740 960 C 740 1010, 855 1010, 855 1060"
-                    stroke="#1D4ED8"
-                    strokeWidth="3.5"
-                    strokeLinecap="round"
-                    strokeDasharray="6 4"
-                    fill="none"
+                    filter="url(#unifiedLineShadow)"
                   />
 
-                  {/* From Right Lead (1235, 890) to Sub-Cards 5 & 6 */}
-                  <path
-                    className="tree-svg-path"
-                    d="M 1235 890 C 1235 940, 1120 940, 1120 990"
-                    stroke="#1D4ED8"
-                    strokeWidth="3.5"
-                    strokeLinecap="round"
-                    strokeDasharray="6 4"
-                    fill="none"
+                  {/* Terminal anchor pin at connection start */}
+                  <circle
+                    cx={line.from.x}
+                    cy={line.from.y}
+                    r="3.5"
+                    fill="#0F2C59"
+                    stroke="#FFFFFF"
+                    strokeWidth="1.5"
                   />
-                  <path
-                    className="tree-svg-path"
-                    d="M 1235 890 C 1235 940, 1350 940, 1350 990"
-                    stroke="#1D4ED8"
-                    strokeWidth="3.5"
-                    strokeLinecap="round"
-                    strokeDasharray="6 4"
-                    fill="none"
-                  />
-                </>
-              )}
 
-              {/* Glowing signal particles traveling along branches */}
-              <circle r="4" fill="#60A5FA">
-                <animateMotion
-                  path="M 740 360 C 740 440, 560 440, 420 465 C 310 485, 245 490, 245 520"
-                  dur="4.5s"
-                  repeatCount="indefinite"
-                />
-              </circle>
-              <circle r="4" fill="#60A5FA">
-                <animateMotion
-                  path="M 740 360 C 740 470, 780 490, 770 540 C 760 575, 740 580, 740 600"
-                  dur="4s"
-                  repeatCount="indefinite"
-                />
-              </circle>
-              <circle r="4" fill="#60A5FA">
-                <animateMotion
-                  path="M 740 360 C 740 440, 920 440, 1060 465 C 1170 485, 1235 495, 1235 530"
-                  dur="4.2s"
-                  repeatCount="indefinite"
-                />
-              </circle>
+                  {/* Terminal anchor pin at connection end */}
+                  <circle
+                    cx={line.to.x}
+                    cy={line.to.y}
+                    r="3.5"
+                    fill="#1D4ED8"
+                    stroke="#FFFFFF"
+                    strokeWidth="1.5"
+                  />
+
+                  {/* Animated signal light pulse traveling down the branch */}
+                  <circle r="3" fill="#60A5FA" filter="url(#nodeGlow)">
+                    <animateMotion
+                      path={line.d}
+                      dur={line.dur}
+                      repeatCount="indefinite"
+                      keyPoints="0;1"
+                      keyTimes="0;1"
+                    />
+                  </circle>
+                </g>
+              ))}
             </svg>
           </div>
 
           {/* ========================================================= */}
-          {/* TIER 2: 3 Direct Functional Leads (Left, Middle, Right)   */}
+          {/* TIER 1: Root Leader (CEO)                                 */}
+          {/* Refined scale: 220px x 265px with 136px photo             */}
           {/* ========================================================= */}
-          <div className="w-full flex flex-col lg:flex-row items-center justify-between gap-12 lg:gap-6 mt-6 lg:mt-32 relative z-20">
+          <div className="relative z-20 mb-10 sm:mb-12">
+            <div
+              ref={tier1CardRef}
+              onClick={() => setSelectedMember(tier1Member)}
+              className="tree-node-card w-[215px] sm:w-[225px] h-[265px] rounded-[22px] p-4 flex flex-col items-center justify-between cursor-pointer group transition-all duration-300 hover:-translate-y-1.5 hover:shadow-[0_16px_36px_rgba(29,78,216,0.22)] hover:border-blue-500 bg-gradient-to-b from-white via-white to-blue-50/80 border-2 border-[#C8DBF4] shadow-[0_12px_28px_-6px_rgba(15,44,89,0.14),0_4px_12px_-2px_rgba(15,44,89,0.06)]"
+            >
+              {/* Photo */}
+              <div className="relative w-[136px] h-[136px] rounded-[18px] overflow-hidden shadow-[0_4px_12px_rgba(0,0,0,0.14)] bg-[#1e232d] flex-shrink-0">
+                <img
+                  src={tier1Member.image}
+                  alt={tier1Member.name}
+                  className="w-full h-full object-cover object-top grayscale-[12%] contrast-105 brightness-95 transition-transform duration-500 group-hover:scale-105"
+                />
+                <div className="absolute inset-0 ring-1 ring-black/10 rounded-[18px] pointer-events-none" />
+                <div className="absolute top-2 right-2 w-2.5 h-2.5 rounded-full bg-emerald-500 ring-2 ring-white shadow-xs" />
+              </div>
+
+              {/* Text Info */}
+              <div className="flex flex-col items-center text-center mt-1 w-full">
+                <span className="font-['Sora'] font-bold text-[18px] text-slate-950 leading-tight">
+                  {getDisplayName(tier1Member)}
+                </span>
+                <span className="font-['Sora'] font-semibold text-[13.5px] text-blue-700 mt-0.5">
+                  {getDisplayRole(tier1Member)}
+                </span>
+                {showRealNames && (
+                  <span className="text-[10px] font-['JetBrains_Mono'] text-slate-500 tracking-wider uppercase mt-1">
+                    {tier1Member.department}
+                  </span>
+                )}
+              </div>
+            </div>
+          </div>
+
+          {/* ========================================================= */}
+          {/* TIER 2: 3 Functional Leads (Infrastructure, AI, IoT)      */}
+          {/* Refined scale: 205px x 255px with 126px photo             */}
+          {/* ========================================================= */}
+          <div className="w-full grid grid-cols-1 lg:grid-cols-3 gap-8 lg:gap-12 items-center justify-items-center relative z-20">
             {tier2Members.map((member, index) => {
-              // Asymmetric heights matching Figma positioning
-              const offsetClass = [
-                'lg:-translate-y-4', // Left
-                'lg:translate-y-20', // Middle (placed lower)
-                'lg:-translate-y-2', // Right
+              // Subtle stagger matching Figma's dynamic composition
+              const staggerClass = [
+                'lg:-translate-y-2',
+                'lg:translate-y-8',
+                'lg:-translate-y-1',
               ][index];
 
               return (
                 <div
                   key={member.id}
+                  ref={tier2CardRefs[index]}
                   onClick={() => setSelectedMember(member)}
-                  className={`tree-node-card w-[300px] h-[357px] team-card-glass rounded-[24px] p-[30px_56px_37px] flex flex-col items-center gap-[24px] cursor-pointer group transition-all duration-300 hover:-translate-y-2 hover:shadow-[0_12px_30px_rgba(29,78,216,0.3)] hover:border-blue-300 ${offsetClass}`}
+                  className={`tree-node-card w-[205px] sm:w-[215px] h-[255px] rounded-[22px] p-4 flex flex-col items-center justify-between cursor-pointer group transition-all duration-300 hover:-translate-y-1.5 hover:shadow-[0_16px_36px_rgba(29,78,216,0.22)] hover:border-blue-500 bg-gradient-to-b from-white via-white to-blue-50/80 border-2 border-[#C8DBF4] shadow-[0_12px_28px_-6px_rgba(15,44,89,0.14),0_4px_12px_-2px_rgba(15,44,89,0.06)] ${staggerClass}`}
                 >
-                  <div className="transition-transform duration-300 group-hover:scale-[1.03]">
-                    <MemberPhoto src={member.image} alt={member.name} />
+                  {/* Photo */}
+                  <div className="relative w-[126px] h-[126px] rounded-[16px] overflow-hidden shadow-[0_4px_12px_rgba(0,0,0,0.14)] bg-[#1e232d] flex-shrink-0">
+                    <img
+                      src={member.image}
+                      alt={member.name}
+                      className="w-full h-full object-cover object-top grayscale-[12%] contrast-105 brightness-95 transition-transform duration-500 group-hover:scale-105"
+                    />
+                    <div className="absolute inset-0 ring-1 ring-black/10 rounded-[16px] pointer-events-none" />
+                    <div className="absolute top-2 right-2 w-2.5 h-2.5 rounded-full bg-blue-600 ring-2 ring-white shadow-xs" />
                   </div>
 
-                  <div className="flex flex-col items-center gap-0 -mt-2 text-center">
-                    <span className="font-['Sora'] font-normal text-[24px] leading-[28px] text-black [text-shadow:0px_4px_4px_rgba(0,0,0,0.25)]">
+                  {/* Text */}
+                  <div className="flex flex-col items-center text-center mt-1 w-full">
+                    <span className="font-['Sora'] font-bold text-[17px] text-slate-950 leading-tight">
                       {getDisplayName(member)}
                     </span>
-                    <span className="font-['Sora'] font-normal text-[20px] sm:text-[22px] leading-[36px] tracking-[-0.02em] text-[#808080] [text-shadow:0px_4px_4px_rgba(0,0,0,0.25)]">
+                    <span className="font-['Sora'] font-semibold text-[13px] text-blue-700 mt-0.5">
                       {getDisplayRole(member)}
                     </span>
+                    {showRealNames && (
+                      <span className="text-[10px] font-['JetBrains_Mono'] text-slate-500 tracking-wider uppercase mt-1 line-clamp-1">
+                        {member.department.replace('Connected ', '').replace('Digital ', '')}
+                      </span>
+                    )}
                   </div>
                 </div>
               );
@@ -511,109 +639,127 @@ export const TeamTreeSection = () => {
           </div>
 
           {/* ========================================================= */}
-          {/* TIER 3: The Cards Below (Sub-teams under each lead)       */}
+          {/* TIER 3: The Cards Below (2 Specialists under each Lead)   */}
+          {/* Refined scale: 172px x 218px with 100px photo             */}
+          {/* Perfectly aligned in 3 squads under their parent leads!   */}
           {/* ========================================================= */}
-          {showTier3 && (
-            <div className="w-full mt-20 sm:mt-32 lg:mt-48 relative z-20 animate-in fade-in slide-in-from-bottom-6 duration-500">
-              {/* Group label */}
+          <div
+            className={`w-full transition-all duration-500 ease-in-out relative z-20 ${
+              showTier3
+                ? 'opacity-100 max-h-[1400px] mt-16 sm:mt-24 pointer-events-auto'
+                : 'opacity-0 max-h-0 overflow-hidden mt-0 pointer-events-none'
+            }`}
+          >
+            {/* Squads label badge */}
+            <div className="flex items-center justify-center mb-8">
+              <span className="font-['JetBrains_Mono'] text-[11px] uppercase tracking-[0.2em] text-blue-700 bg-blue-50/90 px-3.5 py-1 rounded-full border border-blue-200/70 font-semibold flex items-center gap-1.5 shadow-2xs">
+                <Sparkles className="w-3 h-3 text-blue-600" />
+                Specialized Engineering Squads
+              </span>
+            </div>
 
-              {/* 3 Columns matching the 3 leads above, each containing 2 child cards */}
-              <div className="grid grid-cols-1 lg:grid-cols-3 gap-12 lg:gap-8 items-start">
-
-                {/* Squad 1: Under Digital Infrastructure (Left) */}
-                <div className="flex flex-col sm:flex-row lg:flex-row justify-center gap-6">
-                  {tier3Left.map((sub) => (
-                    <div
-                      key={sub.id}
-                      onClick={() => setSelectedMember(sub)}
-                      className="tree-node-card w-[260px] sm:w-[220px] xl:w-[230px] h-[310px] team-card-glass rounded-[20px] p-5 flex flex-col items-center gap-4 cursor-pointer group transition-all duration-300 hover:-translate-y-2 hover:shadow-[0_10px_25px_rgba(29,78,216,0.25)] hover:border-blue-400 bg-white/60"
-                    >
-                      <div className="relative w-[130px] h-[130px] rounded-[18px] overflow-hidden shadow-md">
-                        <img
-                          src={sub.image}
-                          alt={sub.name}
-                          className="w-full h-full object-cover grayscale-[10%] group-hover:scale-105 transition-transform duration-300"
-                        />
-                      </div>
-                      <div className="flex flex-col items-center text-center">
-                        <span className="font-['Sora'] font-semibold text-[18px] text-slate-900 leading-snug">
-                          {getDisplayName(sub)}
-                        </span>
-                        <span className="font-['Sora'] text-xs text-blue-700 font-medium mt-0.5">
-                          {getDisplayRole(sub)}
-                        </span>
-                        <span className="font-['JetBrains_Mono'] text-[10px] text-slate-500 mt-1 uppercase">
-                          {sub.department.replace('Digital ', '')}
-                        </span>
-                      </div>
+            {/* 3 Columns matching the 3 leads above */}
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 lg:gap-12 items-start justify-items-center">
+              {/* Squad 1: Under Digital Infrastructure (Left) */}
+              <div className="flex flex-row gap-3 sm:gap-4 justify-center">
+                {tier3Left.map((sub, i) => (
+                  <div
+                    key={sub.id}
+                    ref={tier3CardRefs[i]}
+                    onClick={() => setSelectedMember(sub)}
+                    className="tree-node-card w-[164px] sm:w-[172px] h-[218px] rounded-[18px] p-3 flex flex-col items-center justify-between cursor-pointer group transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_14px_30px_rgba(29,78,216,0.2)] hover:border-blue-500 bg-gradient-to-b from-white via-white to-blue-50/80 border-2 border-[#C8DBF4] shadow-[0_10px_24px_-6px_rgba(15,44,89,0.12),0_4px_10px_-2px_rgba(15,44,89,0.05)]"
+                  >
+                    <div className="relative w-[100px] h-[100px] rounded-[14px] overflow-hidden shadow-sm bg-[#1e232d] flex-shrink-0">
+                      <img
+                        src={sub.image}
+                        alt={sub.name}
+                        className="w-full h-full object-cover object-top grayscale-[10%] group-hover:scale-105 transition-transform duration-300"
+                      />
+                      <div className="absolute inset-0 ring-1 ring-black/10 rounded-[14px] pointer-events-none" />
                     </div>
-                  ))}
-                </div>
 
-                {/* Squad 2: Under AI Research (Middle, slightly offset) */}
-                <div className="flex flex-col sm:flex-row lg:flex-row justify-center gap-6 lg:translate-y-12">
-                  {tier3Mid.map((sub) => (
-                    <div
-                      key={sub.id}
-                      onClick={() => setSelectedMember(sub)}
-                      className="tree-node-card w-[260px] sm:w-[220px] xl:w-[230px] h-[310px] team-card-glass rounded-[20px] p-5 flex flex-col items-center gap-4 cursor-pointer group transition-all duration-300 hover:-translate-y-2 hover:shadow-[0_10px_25px_rgba(29,78,216,0.25)] hover:border-blue-400 bg-white/60"
-                    >
-                      <div className="relative w-[130px] h-[130px] rounded-[18px] overflow-hidden shadow-md">
-                        <img
-                          src={sub.image}
-                          alt={sub.name}
-                          className="w-full h-full object-cover grayscale-[10%] group-hover:scale-105 transition-transform duration-300"
-                        />
-                      </div>
-                      <div className="flex flex-col items-center text-center">
-                        <span className="font-['Sora'] font-semibold text-[18px] text-slate-900 leading-snug">
-                          {getDisplayName(sub)}
-                        </span>
-                        <span className="font-['Sora'] text-xs text-blue-700 font-medium mt-0.5">
-                          {getDisplayRole(sub)}
-                        </span>
-                        <span className="font-['JetBrains_Mono'] text-[10px] text-slate-500 mt-1 uppercase">
-                          {sub.department.replace('Artificial ', '')}
-                        </span>
-                      </div>
+                    <div className="flex flex-col items-center text-center mt-1 w-full">
+                      <span className="font-['Sora'] font-bold text-[14.5px] text-slate-950 leading-tight">
+                        {getDisplayName(sub)}
+                      </span>
+                      <span className="font-['Sora'] text-[11.5px] text-blue-700 font-semibold mt-0.5 line-clamp-1">
+                        {getDisplayRole(sub)}
+                      </span>
+                      <span className="font-['JetBrains_Mono'] text-[9.5px] text-slate-500 uppercase tracking-wider mt-0.5">
+                        Infra
+                      </span>
                     </div>
-                  ))}
-                </div>
+                  </div>
+                ))}
+              </div>
 
-                {/* Squad 3: Under Connected Systems (Right) */}
-                <div className="flex flex-col sm:flex-row lg:flex-row justify-center gap-6">
-                  {tier3Right.map((sub) => (
-                    <div
-                      key={sub.id}
-                      onClick={() => setSelectedMember(sub)}
-                      className="tree-node-card w-[260px] sm:w-[220px] xl:w-[230px] h-[310px] team-card-glass rounded-[20px] p-5 flex flex-col items-center gap-4 cursor-pointer group transition-all duration-300 hover:-translate-y-2 hover:shadow-[0_10px_25px_rgba(29,78,216,0.25)] hover:border-blue-400 bg-white/60"
-                    >
-                      <div className="relative w-[130px] h-[130px] rounded-[18px] overflow-hidden shadow-md">
-                        <img
-                          src={sub.image}
-                          alt={sub.name}
-                          className="w-full h-full object-cover grayscale-[10%] group-hover:scale-105 transition-transform duration-300"
-                        />
-                      </div>
-                      <div className="flex flex-col items-center text-center">
-                        <span className="font-['Sora'] font-semibold text-[18px] text-slate-900 leading-snug">
-                          {getDisplayName(sub)}
-                        </span>
-                        <span className="font-['Sora'] text-xs text-blue-700 font-medium mt-0.5">
-                          {getDisplayRole(sub)}
-                        </span>
-                        <span className="font-['JetBrains_Mono'] text-[10px] text-slate-500 mt-1 uppercase">
-                          {sub.department.replace('Connected ', '')}
-                        </span>
-                      </div>
+              {/* Squad 2: Under AI Research (Middle, slightly offset to match middle lead) */}
+              <div className="flex flex-row gap-3 sm:gap-4 justify-center lg:translate-y-8">
+                {tier3Mid.map((sub, i) => (
+                  <div
+                    key={sub.id}
+                    ref={tier3CardRefs[2 + i]}
+                    onClick={() => setSelectedMember(sub)}
+                    className="tree-node-card w-[164px] sm:w-[172px] h-[218px] rounded-[18px] p-3 flex flex-col items-center justify-between cursor-pointer group transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_14px_30px_rgba(29,78,216,0.2)] hover:border-blue-500 bg-gradient-to-b from-white via-white to-blue-50/80 border-2 border-[#C8DBF4] shadow-[0_10px_24px_-6px_rgba(15,44,89,0.12),0_4px_10px_-2px_rgba(15,44,89,0.05)]"
+                  >
+                    <div className="relative w-[100px] h-[100px] rounded-[14px] overflow-hidden shadow-sm bg-[#1e232d] flex-shrink-0">
+                      <img
+                        src={sub.image}
+                        alt={sub.name}
+                        className="w-full h-full object-cover object-top grayscale-[10%] group-hover:scale-105 transition-transform duration-300"
+                      />
+                      <div className="absolute inset-0 ring-1 ring-black/10 rounded-[14px] pointer-events-none" />
                     </div>
-                  ))}
-                </div>
 
+                    <div className="flex flex-col items-center text-center mt-1 w-full">
+                      <span className="font-['Sora'] font-bold text-[14.5px] text-slate-950 leading-tight">
+                        {getDisplayName(sub)}
+                      </span>
+                      <span className="font-['Sora'] text-[11.5px] text-blue-700 font-semibold mt-0.5 line-clamp-1">
+                        {getDisplayRole(sub)}
+                      </span>
+                      <span className="font-['JetBrains_Mono'] text-[9.5px] text-slate-500 uppercase tracking-wider mt-0.5">
+                        AI Lab
+                      </span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              {/* Squad 3: Under Connected Systems (Right) */}
+              <div className="flex flex-row gap-3 sm:gap-4 justify-center">
+                {tier3Right.map((sub, i) => (
+                  <div
+                    key={sub.id}
+                    ref={tier3CardRefs[4 + i]}
+                    onClick={() => setSelectedMember(sub)}
+                    className="tree-node-card w-[164px] sm:w-[172px] h-[218px] rounded-[18px] p-3 flex flex-col items-center justify-between cursor-pointer group transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_14px_30px_rgba(29,78,216,0.2)] hover:border-blue-500 bg-gradient-to-b from-white via-white to-blue-50/80 border-2 border-[#C8DBF4] shadow-[0_10px_24px_-6px_rgba(15,44,89,0.12),0_4px_10px_-2px_rgba(15,44,89,0.05)]"
+                  >
+                    <div className="relative w-[100px] h-[100px] rounded-[14px] overflow-hidden shadow-sm bg-[#1e232d] flex-shrink-0">
+                      <img
+                        src={sub.image}
+                        alt={sub.name}
+                        className="w-full h-full object-cover object-top grayscale-[10%] group-hover:scale-105 transition-transform duration-300"
+                      />
+                      <div className="absolute inset-0 ring-1 ring-black/10 rounded-[14px] pointer-events-none" />
+                    </div>
+
+                    <div className="flex flex-col items-center text-center mt-1 w-full">
+                      <span className="font-['Sora'] font-bold text-[14.5px] text-slate-950 leading-tight">
+                        {getDisplayName(sub)}
+                      </span>
+                      <span className="font-['Sora'] text-[11.5px] text-blue-700 font-semibold mt-0.5 line-clamp-1">
+                        {getDisplayRole(sub)}
+                      </span>
+                      <span className="font-['JetBrains_Mono'] text-[9.5px] text-slate-500 uppercase tracking-wider mt-0.5">
+                        IoT Device
+                      </span>
+                    </div>
+                  </div>
+                ))}
               </div>
             </div>
-          )}
-
+          </div>
         </div>
       </div>
 
@@ -621,8 +767,8 @@ export const TeamTreeSection = () => {
       {/* MEMBER DETAIL MODAL                                       */}
       {/* ========================================================= */}
       {selectedMember && (
-        <div className="fixed inset-0 bg-black/60 backdrop-blur-md z-50 flex items-center justify-center p-4 animate-in fade-in duration-200">
-          <div className="bg-white rounded-3xl max-w-lg w-full p-6 sm:p-8 shadow-2xl border border-blue-100 relative max-h-[90vh] overflow-y-auto">
+        <div className="fixed inset-0 bg-slate-950/60 backdrop-blur-md z-50 flex items-center justify-center p-4 animate-in fade-in duration-200">
+          <div className="bg-white rounded-3xl max-w-lg w-full p-6 sm:p-8 shadow-2xl border border-slate-200 relative max-h-[90vh] overflow-y-auto">
             <button
               onClick={() => setSelectedMember(null)}
               className="absolute top-6 right-6 p-2 rounded-full hover:bg-slate-100 text-slate-500 hover:text-slate-900 transition-colors cursor-pointer"
@@ -630,8 +776,8 @@ export const TeamTreeSection = () => {
               <X className="w-5 h-5" />
             </button>
 
-            <div className="flex items-center gap-5 mb-6">
-              <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-2xl overflow-hidden shadow-lg border border-slate-200 flex-shrink-0">
+            <div className="flex items-center gap-4 sm:gap-5 mb-6">
+              <div className="w-20 h-20 sm:w-22 sm:h-22 rounded-2xl overflow-hidden shadow-md border border-slate-200 flex-shrink-0">
                 <img
                   src={selectedMember.image}
                   alt={selectedMember.name}
@@ -643,15 +789,15 @@ export const TeamTreeSection = () => {
                   <h3 className="font-['Sora'] font-bold text-xl sm:text-2xl text-slate-950">
                     {getDisplayName(selectedMember)}
                   </h3>
-                  <span className="px-2 py-0.5 rounded text-xs font-['JetBrains_Mono'] bg-blue-100 text-blue-800 font-semibold">
+                  <span className="px-2.5 py-0.5 rounded-full text-xs font-['JetBrains_Mono'] bg-blue-50 text-blue-700 border border-blue-200/80 font-semibold">
                     {getDisplayRole(selectedMember)}
                   </span>
                 </div>
                 <p className="text-xs sm:text-sm font-['Manrope'] text-blue-700 font-semibold mt-1">
                   {selectedMember.discipline}
                 </p>
-                <span className="text-[11px] font-['JetBrains_Mono'] text-slate-600 block mt-0.5">
-                  Dept: {selectedMember.department}
+                <span className="text-[11px] font-['JetBrains_Mono'] text-slate-500 block mt-0.5">
+                  Department: {selectedMember.department}
                 </span>
               </div>
             </div>
@@ -681,7 +827,7 @@ export const TeamTreeSection = () => {
 
             {/* Quote */}
             <div className="bg-slate-50 rounded-2xl p-4 border border-slate-200 mb-6">
-              <span className="text-[11px] font-['JetBrains_Mono'] uppercase tracking-wider text-slate-600 block mb-1">
+              <span className="text-[11px] font-['JetBrains_Mono'] uppercase tracking-wider text-slate-500 block mb-1">
                 Engineering Principle
               </span>
               <p className="font-['Sora'] text-sm italic text-slate-800">
@@ -690,20 +836,20 @@ export const TeamTreeSection = () => {
             </div>
 
             <div className="flex items-center justify-between pt-4 border-t border-slate-100">
-              <div className="flex items-center gap-3">
-                <a href="#connect" className="p-2 rounded-lg bg-slate-100 hover:bg-blue-50 hover:text-blue-600 text-slate-700 transition-colors">
-                  <FaLinkedinIn className="w-4 h-4" />
+              <div className="flex items-center gap-2.5">
+                <a href="#connect" className="p-2 rounded-lg bg-slate-100 hover:bg-blue-50 hover:text-blue-600 text-slate-600 transition-colors">
+                  <Linkedin className="w-4 h-4" />
                 </a>
-                <a href="#connect" className="p-2 rounded-lg bg-slate-100 hover:bg-blue-50 hover:text-blue-600 text-slate-700 transition-colors">
-                  <FaTwitter className="w-4 h-4" />
+                <a href="#connect" className="p-2 rounded-lg bg-slate-100 hover:bg-blue-50 hover:text-blue-600 text-slate-600 transition-colors">
+                  <Twitter className="w-4 h-4" />
                 </a>
-                <a href="mailto:connect@zeldapro.ai" className="p-2 rounded-lg bg-slate-100 hover:bg-blue-50 hover:text-blue-600 text-slate-700 transition-colors">
+                <a href="mailto:team@engineering.io" className="p-2 rounded-lg bg-slate-100 hover:bg-blue-50 hover:text-blue-600 text-slate-600 transition-colors">
                   <Mail className="w-4 h-4" />
                 </a>
               </div>
               <button
                 onClick={() => setSelectedMember(null)}
-                className="px-5 py-2.5 bg-blue-700 hover:bg-blue-800 text-white font-['Manrope'] text-sm font-semibold rounded-xl transition-colors cursor-pointer"
+                className="px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-['Manrope'] text-sm font-semibold rounded-xl transition-colors cursor-pointer"
               >
                 Close Profile
               </button>

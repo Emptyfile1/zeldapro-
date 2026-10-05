@@ -23,6 +23,7 @@ export const WebDevShowcase = ({ onExploreTech }) => {
 
   return (
     <div
+      id="card-web"
       ref={containerRef}
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}

@@ -1,0 +1,94 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600" width="100%" height="100%">
+  <defs>
+    <linearGradient id="bgConn" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#051026" />
+      <stop offset="50%" stop-color="#0B2046" />
+      <stop offset="100%" stop-color="#040B1A" />
+    </linearGradient>
+    <linearGradient id="connCyan" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#38BDF8" />
+      <stop offset="100%" stop-color="#1D4ED8" />
+    </linearGradient>
+    <filter id="glowC" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="8" result="blur" />
+      <feComposite in="SourceGraphic" in2="blur" operator="over" />
+    </filter>
+  </defs>
+
+  <!-- Background -->
+  <rect width="800" height="600" rx="24" fill="url(#bgConn)" />
+  <rect width="800" height="600" rx="24" fill="none" stroke="rgba(255,255,255,0.12)" stroke-width="1.5" />
+
+  <!-- Circular Telemetry Waves -->
+  <g opacity="0.3" stroke="#38BDF8" stroke-width="1.5" fill="none">
+    <ellipse cx="280" cy="340" rx="240" ry="120" stroke-dasharray="6 6" />
+    <ellipse cx="280" cy="340" rx="170" ry="85" />
+    <ellipse cx="280" cy="340" rx="100" ry="50" stroke-dasharray="4 4" />
+  </g>
+
+  <!-- Ambient Light Orbs -->
+  <circle cx="280" cy="340" r="140" fill="#0284C7" opacity="0.25" filter="url(#glowC)" />
+  <circle cx="560" cy="220" r="160" fill="#2563EB" opacity="0.25" filter="url(#glowC)" />
+
+  <!-- Physical IoT Edge Device (Left) -->
+  <g transform="translate(180, 260)">
+    <!-- Device Body -->
+    <rect x="0" y="0" width="160" height="110" rx="16" fill="rgba(15,23,42,0.85)" stroke="rgba(56,189,248,0.5)" stroke-width="2" />
+    <!-- Chip Core -->
+    <rect x="50" y="30" width="60" height="50" rx="8" fill="#0369A1" stroke="#38BDF8" stroke-width="1.5" />
+    <circle cx="80" cy="55" r="8" fill="#E0F2FE" />
+    <!-- Status LEDs -->
+    <circle cx="25" cy="25" r="4" fill="#10B981" filter="url(#glowC)" />
+    <circle cx="40" cy="25" r="4" fill="#38BDF8" />
+    <!-- Antenna -->
+    <line x1="140" y1="0" x2="140" y2="-40" stroke="#38BDF8" stroke-width="3" stroke-linecap="round" />
+    <circle cx="140" cy="-40" r="6" fill="#38BDF8" filter="url(#glowC)" />
+    <!-- Signal Wave Arcs -->
+    <path d="M125 -55 A 25 25 0 0 1 155 -55" fill="none" stroke="#38BDF8" stroke-width="2" stroke-linecap="round" />
+    <path d="M115 -68 A 40 40 0 0 1 165 -68" fill="none" stroke="#38BDF8" stroke-width="1.8" stroke-linecap="round" stroke-dasharray="4 4" />
+  </g>
+
+  <!-- Curved High-Speed Telemetry Bus / Fiber Lines -->
+  <g fill="none">
+    <path d="M340 315 C 420 315, 460 220, 530 220" stroke="url(#connCyan)" stroke-width="3" stroke-linecap="round" />
+    <path d="M340 335 C 430 335, 470 240, 530 240" stroke="#38BDF8" stroke-width="1.5" stroke-dasharray="6 6" stroke-opacity="0.8" />
+    <path d="M320 360 C 420 380, 480 300, 540 260" stroke="#1D4ED8" stroke-width="2" stroke-opacity="0.6" />
+
+    <!-- Moving Data Packet Nodes -->
+    <circle cx="410" cy="290" r="5" fill="#E0F2FE" filter="url(#glowC)" />
+    <circle cx="460" cy="245" r="6" fill="#38BDF8" filter="url(#glowC)" />
+    <circle cx="495" cy="226" r="4" fill="#FFFFFF" />
+  </g>
+
+  <!-- Digital Cloud Ingestion Hub (Right) -->
+  <g transform="translate(520, 150)">
+    <!-- Hexagonal Ingestion Cluster -->
+    <polygon points="90,10 160,50 160,130 90,170 20,130 20,50" fill="rgba(30,58,138,0.4)" stroke="rgba(147,197,253,0.5)" stroke-width="2" />
+    <!-- Inner Rings -->
+    <circle cx="90" cy="90" r="45" fill="rgba(14,165,233,0.2)" stroke="#38BDF8" stroke-width="1.5" />
+    <circle cx="90" cy="90" r="22" fill="#0284C7" />
+    <circle cx="90" cy="90" r="8" fill="#FFFFFF" filter="url(#glowC)" />
+
+    <!-- Satellite Connected Nodes -->
+    <circle cx="20" cy="50" r="8" fill="#1D4ED8" stroke="#93C5FD" stroke-width="2" />
+    <circle cx="160" cy="50" r="8" fill="#1D4ED8" stroke="#93C5FD" stroke-width="2" />
+    <circle cx="160" cy="130" r="8" fill="#1D4ED8" stroke="#93C5FD" stroke-width="2" />
+    <circle cx="20" cy="130" r="8" fill="#1D4ED8" stroke="#93C5FD" stroke-width="2" />
+    <circle cx="90" cy="10" r="8" fill="#38BDF8" stroke="#FFFFFF" stroke-width="2" />
+    <circle cx="90" cy="170" r="8" fill="#38BDF8" stroke="#FFFFFF" stroke-width="2" />
+  </g>
+
+  <!-- Badge Top-Left -->
+  <g transform="translate(48, 48)">
+    <rect width="180" height="34" rx="8" fill="rgba(14,165,233,0.2)" stroke="rgba(56,189,248,0.4)" stroke-width="1" />
+    <circle cx="16" cy="17" r="4" fill="#38BDF8" />
+    <text x="28" y="22" font-family="'JetBrains Mono', monospace" font-size="12" font-weight="700" fill="#BAE6FD" letter-spacing="1.5">02 // CONNECT</text>
+  </g>
+
+  <!-- Telemetry Details Bottom -->
+  <g transform="translate(48, 520)" opacity="0.75">
+    <text x="0" y="20" font-family="'JetBrains Mono', monospace" font-size="11" fill="#7DD3FC">PROTOCOL: MQTT / gRPC v2</text>
+    <text x="0" y="36" font-family="'JetBrains Mono', monospace" font-size="11" fill="#7DD3FC">BUFFER: 48,200 EVENTS/SEC</text>
+    <text x="240" y="28" font-family="'JetBrains Mono', monospace" font-size="11" font-weight="700" fill="#38BDF8">[STREAM SYNCHRONIZED]</text>
+  </g>
+</svg>

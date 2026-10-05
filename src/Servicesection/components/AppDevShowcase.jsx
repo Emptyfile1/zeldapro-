@@ -24,6 +24,7 @@ export const AppDevShowcase = ({ onExploreTech }) => {
 
   return (
     <div
+      id="card-app" 
       ref={containerRef}
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}

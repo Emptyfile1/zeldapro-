@@ -8,6 +8,7 @@ import { FaqSection } from '../Homesections/FaqSection';
 import { FinalCtaSection } from '../Homesections/FinalCtaSection';
 import { Footer } from '../Components/Footer';
 import { ContactModal } from '../Homesections/ContactModal';
+import { ProcessSection } from '../Homesections/ProcessSection';
 
 function Home() {
   const [contactOpen, setContactOpen] = useState(false);
@@ -26,6 +27,7 @@ function Home() {
         <Hero onOpenContact={() => setContactOpen(true)} />
         <VisionSection />
         <ManifestoSection />
+        <ProcessSection />
         <ServicesSection onOpenContact={() => setContactOpen(true)} />
         <TestimonialsSection />
         <FaqSection />

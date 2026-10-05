@@ -11,6 +11,7 @@ import { ContactModal } from '../Servicesection/components/ContactModal.jsx';
 import { Footer } from '../Components/Footer.jsx';
 import { servicesData } from '../Servicesection/data/servicesData.js';
 import { ArrowRight, ChevronRight, Sparkles } from 'lucide-react';
+import { CtaBanner } from '../Servicesection/components/CtaBanner.jsx';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -18,7 +19,6 @@ export default function App() {
   const [selectedService, setSelectedService] = useState(null);
   const [contactOpen, setContactOpen] = useState(false);
   const [preselectedService, setPreselectedService] = useState('Web development');
-
   // Section Refs for GSAP
   const mainContainerRef = useRef(null);
   const webSectionRef = useRef(null);
@@ -207,7 +207,7 @@ export default function App() {
 
 
       {/* Main Canvas Container (Matching Figma width baseline: 1725px) */}
-      <main className="relative max-w-[1725px] mx-auto px-6 sm:px-10 lg:px-16 pt-28 sm:pt-36 lg:pt-44 pb-24 overflow-hidden">
+      <main className="relative max-w-[1725px] mx-auto px-6 sm:px-10 lg:px-16 pt-20 sm:pt-24 lg:pt-28 pb-24 overflow-hidden">
         {/* Dynamic Curved Connection Line linking the sections */}
         <ConnectingLine />
 
@@ -391,36 +391,9 @@ export default function App() {
         </section>
 
         {/* High-Intent Strategic Engagement Block */}
-        <section className="relative z-10 rounded-2xl bg-gradient-to-r from-slate-900 via-blue-950 to-slate-900 text-white p-8 sm:p-12 lg:p-16 my-16 shadow-2xl overflow-hidden border border-slate-800">
-          <div className="absolute top-0 right-0 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl pointer-events-none" />
-          <div className="relative z-10 max-w-3xl">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-md bg-blue-500/20 text-blue-300 text-xs font-mono mb-4 border border-blue-400/30">
-              <Sparkles className="w-3.5 h-3.5" />
-              <span>Engineering Partnership Cycle</span>
-            </div>
-            <h3 className="text-3xl sm:text-4xl lg:text-5xl font-bold font-sora tracking-tight leading-tight">
-              Ready to construct your next enterprise digital platform?
-            </h3>
-            <p className="text-slate-300 text-base sm:text-lg mt-4 leading-relaxed font-normal">
-              From high-load edge web systems to production-ready native mobile applications and private AI inference engines, our engineering leads work directly with your executive stakeholders.
-            </p>
-            <div className="mt-8 flex flex-col sm:flex-row items-stretch sm:items-center gap-4">
-              <button
-                onClick={() => openContactWithService('Full Digital Suite')}
-                className="px-6 py-3.5 rounded-lg bg-blue-600 hover:bg-blue-500 text-white font-semibold text-base shadow-lg transition-colors inline-flex items-center justify-center gap-2 cursor-pointer"
-              >
-                <span>Schedule Engineering Discovery</span>
-                <ArrowRight className="w-4 h-4" />
-              </button>
-              <button
-                onClick={() => openServiceModal('web-dev')}
-                className="px-6 py-3.5 rounded-lg bg-white/10 hover:bg-white/20 text-white font-medium text-base transition-colors border border-white/20 inline-flex items-center justify-center cursor-pointer"
-              >
-                <span>Review Tech Specifications</span>
-              </button>
-            </div>
-          </div>
-        </section>
+        <CtaBanner
+                  onStartProject={() => handleOpenConnect('New Project Scoping')}
+        />
       </main>
 
       {/* Global Footer */}
@@ -437,7 +410,7 @@ export default function App() {
       />
 
       {/* Consultation Inquiry Modal */}
-      <ContactModal
+            <ContactModal
         isOpen={contactOpen}
         onClose={() => setContactOpen(false)}
         preselectedService={preselectedService}

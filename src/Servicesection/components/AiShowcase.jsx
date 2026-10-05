@@ -24,6 +24,7 @@ export const AiShowcase = ({ onExploreTech }) => {
 
   return (
     <div
+      id="card-ai"
       ref={containerRef}
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
