@@ -48,13 +48,13 @@ export const Footer = () => {
             </h4>
             <ul className="space-y-2.5 text-sm text-white/90">
               <li className="hover:text-white transition-colors cursor-pointer">
-                [01] Digital Infrastructure
+                Digital Infrastructure
               </li>
               <li className="hover:text-white transition-colors cursor-pointer">
-                [02] Artificial Intelligence
+                Artificial Intelligence
               </li>
               <li className="hover:text-white transition-colors cursor-pointer">
-                [03] Connected IoT Systems
+                Connected IoT Systems
               </li>
             </ul>
           </div>
@@ -67,7 +67,7 @@ export const Footer = () => {
             <ul className="space-y-2.5 text-sm text-white/85">
               <li>
                 <a href="#about" className="hover:text-white transition-colors">
-                  About Lab
+                  About 
                 </a>
               </li>
               <li>
@@ -82,34 +82,8 @@ export const Footer = () => {
               </li>
               <li>
                 <a href="#contact" className="hover:text-white transition-colors">
-                  Contact Bureau
+                  Contact 
                 </a>
-              </li>
-            </ul>
-          </div>
-
-          {/* Col 3: Telemetry */}
-          <div className="lg:col-span-3 lg:border-l lg:border-white/10 lg:pl-8">
-            <h4 className="font-mono text-xs tracking-wider text-white/50 mb-4 uppercase">
-              // TELEMETRY
-            </h4>
-            <ul className="font-mono text-[13px] space-y-2 text-white/70">
-              <li className="flex items-center justify-between">
-                <span>SYS.TIME:</span>
-                <span className="text-white/90 truncate ml-2" title={currentUtcTime}>
-                  {currentUtcTime ? currentUtcTime.split(' ').slice(4).join(' ') : 'SYNCING...'}
-                </span>
-              </li>
-              <li className="flex items-center justify-between">
-                <span>CORE:</span>
-                <span className="text-emerald-400 font-semibold flex items-center gap-1.5">
-                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-                  NOMINAL
-                </span>
-              </li>
-              <li className="flex items-center justify-between">
-                <span>GRID:</span>
-                <span className="text-blue-400">12-ASYM</span>
               </li>
             </ul>
           </div>
@@ -119,8 +93,6 @@ export const Footer = () => {
         <div className="pt-6 flex flex-col sm:flex-row justify-between items-center gap-4 text-xs font-mono text-white/50">
           <div>&copy; 2026 Zeldapro Consultancy Pvt Ltd. ALL RIGHTS RESERVED.</div>
           <div className="flex flex-wrap items-center gap-6 text-[11px]">
-            <span>LAT 19.06° / LON 72.86°</span>
-            <span>ENCRYPTION: AES-256</span>
             <span className="hover:text-white cursor-pointer transition-colors">
               PRIVACY PROTOCOL
             </span>

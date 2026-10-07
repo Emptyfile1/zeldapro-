@@ -51,7 +51,7 @@ export const Navbar = ({ onOpenContact }) => {
           <img
             src={logo}
             alt="Zeldapro"
-            className="h-10 w-auto select-none transition-transform duration-300 group-hover:scale-105"
+            className="h-15 w-auto select-none transition-transform duration-300 group-hover:scale-105"
           />
         </Link>
 

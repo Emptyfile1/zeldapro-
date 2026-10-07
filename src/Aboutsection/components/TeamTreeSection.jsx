@@ -557,7 +557,6 @@ export const TeamTreeSection = () => {
           <div className="relative z-20 mb-10 sm:mb-12">
             <div
               ref={tier1CardRef}
-              onClick={() => setSelectedMember(tier1Member)}
               className="tree-node-card w-[215px] sm:w-[225px] h-[265px] rounded-[22px] p-4 flex flex-col items-center justify-between cursor-pointer group transition-all duration-300 hover:-translate-y-1.5 hover:shadow-[0_16px_36px_rgba(29,78,216,0.22)] hover:border-blue-500 bg-gradient-to-b from-white via-white to-blue-50/80 border-2 border-[#C8DBF4] shadow-[0_12px_28px_-6px_rgba(15,44,89,0.14),0_4px_12px_-2px_rgba(15,44,89,0.06)]"
             >
               {/* Photo */}
@@ -605,7 +604,7 @@ export const TeamTreeSection = () => {
                 <div
                   key={member.id}
                   ref={tier2CardRefs[index]}
-                  onClick={() => setSelectedMember(member)}
+                  
                   className={`tree-node-card w-[205px] sm:w-[215px] h-[255px] rounded-[22px] p-4 flex flex-col items-center justify-between cursor-pointer group transition-all duration-300 hover:-translate-y-1.5 hover:shadow-[0_16px_36px_rgba(29,78,216,0.22)] hover:border-blue-500 bg-gradient-to-b from-white via-white to-blue-50/80 border-2 border-[#C8DBF4] shadow-[0_12px_28px_-6px_rgba(15,44,89,0.14),0_4px_12px_-2px_rgba(15,44,89,0.06)] ${staggerClass}`}
                 >
                   {/* Photo */}
@@ -666,7 +665,7 @@ export const TeamTreeSection = () => {
                   <div
                     key={sub.id}
                     ref={tier3CardRefs[i]}
-                    onClick={() => setSelectedMember(sub)}
+                    
                     className="tree-node-card w-[164px] sm:w-[172px] h-[218px] rounded-[18px] p-3 flex flex-col items-center justify-between cursor-pointer group transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_14px_30px_rgba(29,78,216,0.2)] hover:border-blue-500 bg-gradient-to-b from-white via-white to-blue-50/80 border-2 border-[#C8DBF4] shadow-[0_10px_24px_-6px_rgba(15,44,89,0.12),0_4px_10px_-2px_rgba(15,44,89,0.05)]"
                   >
                     <div className="relative w-[100px] h-[100px] rounded-[14px] overflow-hidden shadow-sm bg-[#1e232d] flex-shrink-0">
@@ -699,7 +698,7 @@ export const TeamTreeSection = () => {
                   <div
                     key={sub.id}
                     ref={tier3CardRefs[2 + i]}
-                    onClick={() => setSelectedMember(sub)}
+                    
                     className="tree-node-card w-[164px] sm:w-[172px] h-[218px] rounded-[18px] p-3 flex flex-col items-center justify-between cursor-pointer group transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_14px_30px_rgba(29,78,216,0.2)] hover:border-blue-500 bg-gradient-to-b from-white via-white to-blue-50/80 border-2 border-[#C8DBF4] shadow-[0_10px_24px_-6px_rgba(15,44,89,0.12),0_4px_10px_-2px_rgba(15,44,89,0.05)]"
                   >
                     <div className="relative w-[100px] h-[100px] rounded-[14px] overflow-hidden shadow-sm bg-[#1e232d] flex-shrink-0">
@@ -732,7 +731,7 @@ export const TeamTreeSection = () => {
                   <div
                     key={sub.id}
                     ref={tier3CardRefs[4 + i]}
-                    onClick={() => setSelectedMember(sub)}
+                    
                     className="tree-node-card w-[164px] sm:w-[172px] h-[218px] rounded-[18px] p-3 flex flex-col items-center justify-between cursor-pointer group transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_14px_30px_rgba(29,78,216,0.2)] hover:border-blue-500 bg-gradient-to-b from-white via-white to-blue-50/80 border-2 border-[#C8DBF4] shadow-[0_10px_24px_-6px_rgba(15,44,89,0.12),0_4px_10px_-2px_rgba(15,44,89,0.05)]"
                   >
                     <div className="relative w-[100px] h-[100px] rounded-[14px] overflow-hidden shadow-sm bg-[#1e232d] flex-shrink-0">
@@ -770,7 +769,6 @@ export const TeamTreeSection = () => {
         <div className="fixed inset-0 bg-slate-950/60 backdrop-blur-md z-50 flex items-center justify-center p-4 animate-in fade-in duration-200">
           <div className="bg-white rounded-3xl max-w-lg w-full p-6 sm:p-8 shadow-2xl border border-slate-200 relative max-h-[90vh] overflow-y-auto">
             <button
-              onClick={() => setSelectedMember(null)}
               className="absolute top-6 right-6 p-2 rounded-full hover:bg-slate-100 text-slate-500 hover:text-slate-900 transition-colors cursor-pointer"
             >
               <X className="w-5 h-5" />
@@ -848,7 +846,7 @@ export const TeamTreeSection = () => {
                 </a>
               </div>
               <button
-                onClick={() => setSelectedMember(null)}
+              
                 className="px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-['Manrope'] text-sm font-semibold rounded-xl transition-colors cursor-pointer"
               >
                 Close Profile

@@ -391,11 +391,11 @@ export default function App() {
         </section>
 
         {/* High-Intent Strategic Engagement Block */}
-        <CtaBanner
+        
+      </main>
+<CtaBanner
                   onStartProject={() => handleOpenConnect('New Project Scoping')}
         />
-      </main>
-
       {/* Global Footer */}
       <Footer onContactClick={() => setContactOpen(true)} />
 

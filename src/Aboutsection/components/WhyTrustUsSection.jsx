@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import { ChevronLeft, ChevronRight, Sparkles, Building2, CheckCircle2 } from 'lucide-react';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -176,6 +176,7 @@ export const WhyTrustUsSection = () => {
   const scrollTriggerInstanceRef = useRef(null);
 
   const [activeSlide, setActiveSlide] = useState(0); // 0 = Trust, 1 = Partners
+  const [partnersReady, setPartnersReady] = useState(false); // true once Partners slide fully arrived
 
   // Animated Numbers for Slide 1
   const [stat1, setStat1] = useState(0); // 50,000
@@ -218,11 +219,9 @@ export const WhyTrustUsSection = () => {
           scrub: 0.9,
           anticipatePin: 1,
           onUpdate: (self) => {
-            if (self.progress >= 0.45) {
-              setActiveSlide(1);
-            } else {
-              setActiveSlide(0);
-            }
+            setActiveSlide(self.progress >= 0.45 ? 1 : 0);
+            // Only allow the card grid to scroll once the slide has fully arrived
+            setPartnersReady(self.progress >= 0.98);
           },
         },
       });
@@ -273,7 +272,7 @@ export const WhyTrustUsSection = () => {
   const goToSlide = (slideIndex) => {
     if (!scrollTriggerInstanceRef.current) return;
     const st = scrollTriggerInstanceRef.current;
-    const targetProgress = slideIndex === 0 ? 0.05 : 0.95;
+    const targetProgress = slideIndex === 0 ? 0.05 : 0.99;
     const targetScroll = st.start + (st.end - st.start) * targetProgress;
 
     window.scrollTo({
@@ -356,7 +355,6 @@ export const WhyTrustUsSection = () => {
 
       {/* Main Slide Presentation Stage */}
       <div className="relative z-20 flex-1 max-w-[1725px] w-full mx-auto flex items-center overflow-hidden">
-
         {/* ========================================================= */}
         {/* SLIDE 1: "Why Trust us?" (3 Staggered Stat Cards)         */}
         {/* ========================================================= */}
@@ -364,75 +362,68 @@ export const WhyTrustUsSection = () => {
           ref={slide1Ref}
           className="absolute inset-0 w-full h-full flex flex-col justify-between py-2 sm:py-4"
         >
-          {/* Title: Why Trust us? (with "Trust" in blue #1D4ED8) */}
-          <div className="pt-2 sm:pt-4">
-            <h2 className="font-['Sora'] font-semibold text-[44px] sm:text-[64px] md:text-[80px] lg:text-[92px] leading-[1.0] tracking-[-0.02em] text-black">
-              Why <span className="text-[#1D4ED8]">Trust</span> us?
-            </h2>
-          </div>
+          {/* Title */}
+          <h2 className="font-['Sora'] font-semibold text-[44px] sm:text-[64px] md:text-[80px] lg:text-[92px] leading-[1.0] tracking-[-0.02em]">
+            <span className="grad-text g-bkbl inline-block pb-2">Why Trust us?</span>
+          </h2>
 
-          {/* 3 Asymmetric Stat Cards Matching Image 1 */}
           {/* 3 Stat Cards — CSS Grid ensures guaranteed spacing, no overlap */}
-<div className="relative w-full flex-1 grid grid-cols-1 sm:grid-cols-3 gap-6 sm:gap-6 lg:gap-8 mt-6 sm:mt-10 max-h-[560px] items-start">
+          <div className="relative w-full flex-1 grid grid-cols-1 sm:grid-cols-3 gap-6 sm:gap-6 lg:gap-8 mt-6 sm:mt-10 max-h-[560px] items-start">
+            {/* Bottom Left Card: 50,000+ / Hours of Manual Work Automated */}
+            <div className="stat-card-gradient rounded-[24px] p-6 sm:p-7 flex flex-col justify-between transition-transform duration-300 hover:-translate-y-2 w-full max-w-[320px] mx-auto sm:mx-0 h-[190px] sm:h-[200px] lg:h-[210px] shadow-xl sm:mt-16 lg:mt-24">
+              <div className="font-['Sora'] font-bold text-[38px] sm:text-[46px] lg:text-[54px] leading-none tracking-[-0.02em] text-[#0B1B3D]">
+                {stat1 >= 50000 ? '50,000+' : `${stat1.toLocaleString()}+`}
+              </div>
+              <p className="font-['Manrope'] font-normal text-[15px] sm:text-[17px] lg:text-[18px] leading-[1.2] tracking-[-0.02em] text-black">
+                Hours of Manual Work Automated
+              </p>
+            </div>
 
-  {/* Bottom Left Card: 50,000+ / Hours of Manual Work Automated */}
-  <div
-    className="stat-card-gradient rounded-[24px] p-6 sm:p-7 flex flex-col justify-between transition-transform duration-300 hover:-translate-y-2 w-full max-w-[320px] mx-auto sm:mx-0 h-[190px] sm:h-[200px] lg:h-[210px] shadow-xl sm:mt-16 lg:mt-24"
-  >
-    <div className="font-['Sora'] font-bold text-[38px] sm:text-[46px] lg:text-[54px] leading-none tracking-[-0.02em] text-[#0B1B3D]">
-      {stat1 >= 50000 ? '50,000+' : `${stat1.toLocaleString()}+`}
-    </div>
-    <p className="font-['Manrope'] font-normal text-[15px] sm:text-[17px] lg:text-[18px] leading-[1.2] tracking-[-0.02em] text-black">
-      Hours of Manual Work Automated
-    </p>
-  </div>
+            {/* Top Center Card: 30% / Reduction in Operational Costs via AI */}
+            <div className="stat-card-gradient rounded-[24px] p-6 sm:p-7 flex flex-col justify-between transition-transform duration-300 hover:-translate-y-2 w-full max-w-[320px] mx-auto h-[190px] sm:h-[200px] lg:h-[210px] shadow-xl">
+              <div className="font-['Sora'] font-bold text-[38px] sm:text-[46px] lg:text-[54px] leading-none tracking-[-0.02em] text-[#0B1B3D]">
+                {stat2}%
+              </div>
+              <p className="font-['Manrope'] font-normal text-[15px] sm:text-[17px] lg:text-[18px] leading-[1.2] tracking-[-0.02em] text-black">
+                Reduction in Operational Costs via AI
+              </p>
+            </div>
 
-  {/* Top Center Card: 30% / Reduction in Operational Costs via AI */}
-  <div
-    className="stat-card-gradient rounded-[24px] p-6 sm:p-7 flex flex-col justify-between transition-transform duration-300 hover:-translate-y-2 w-full max-w-[320px] mx-auto h-[190px] sm:h-[200px] lg:h-[210px] shadow-xl"
-  >
-    <div className="font-['Sora'] font-bold text-[38px] sm:text-[46px] lg:text-[54px] leading-none tracking-[-0.02em] text-[#0B1B3D]">
-      {stat2}%
-    </div>
-    <p className="font-['Manrope'] font-normal text-[15px] sm:text-[17px] lg:text-[18px] leading-[1.2] tracking-[-0.02em] text-black">
-      Reduction in Operational Costs via AI
-    </p>
-  </div>
-
-  {/* Bottom Right Card: 80% / Faster Decision-Making Workflows */}
-  <div
-    className="stat-card-gradient rounded-[24px] p-6 sm:p-7 flex flex-col justify-between transition-transform duration-300 hover:-translate-y-2 w-full max-w-[320px] mx-auto sm:mx-0 sm:ml-auto h-[190px] sm:h-[200px] lg:h-[210px] shadow-xl sm:mt-16 lg:mt-24"
-  >
-    <div className="font-['Sora'] font-bold text-[38px] sm:text-[46px] lg:text-[54px] leading-none tracking-[-0.02em] text-[#0B1B3D]">
-      {stat3}%
-    </div>
-    <p className="font-['Manrope'] font-normal text-[15px] sm:text-[17px] lg:text-[18px] leading-[1.2] tracking-[-0.02em] text-black">
-      Faster Decision-Making Workflows
-    </p>
-  </div>
-
-</div>
+            {/* Bottom Right Card: 80% / Faster Decision-Making Workflows */}
+            <div className="stat-card-gradient rounded-[24px] p-6 sm:p-7 flex flex-col justify-between transition-transform duration-300 hover:-translate-y-2 w-full max-w-[320px] mx-auto sm:mx-0 sm:ml-auto h-[190px] sm:h-[200px] lg:h-[210px] shadow-xl sm:mt-16 lg:mt-24">
+              <div className="font-['Sora'] font-bold text-[38px] sm:text-[46px] lg:text-[54px] leading-none tracking-[-0.02em] text-[#0B1B3D]">
+                {stat3}%
+              </div>
+              <p className="font-['Manrope'] font-normal text-[15px] sm:text-[17px] lg:text-[18px] leading-[1.2] tracking-[-0.02em] text-black">
+                Faster Decision-Making Workflows
+              </p>
+            </div>
+          </div>
         </div>
 
         {/* ========================================================= */}
-        {/* SLIDE 2: "Partners" (6 Cards with REAL COMPANY LOGOS)     */}
+        {/* SLIDE 2: "Partners" (6 cards, grid scrolls once visible)  */}
         {/* ========================================================= */}
         <div
           ref={slide2Ref}
-          className="absolute inset-0 w-full h-full flex flex-col justify-between py-2 sm:py-4"
+          className="absolute inset-0 w-full h-full flex flex-col py-2 sm:py-4"
         >
-          {/* Title: Partners (with "artne" in blue #1D4ED8 matching Image 2) */}
-          <div className="pt-2 sm:pt-4 flex items-baseline justify-between">
-            <h2 className="font-['Sora'] font-semibold text-[44px] sm:text-[64px] md:text-[80px] lg:text-[92px] leading-[1.0] tracking-[-0.02em] text-black">
-              P<span className="text-[#1D4ED8]">artne</span>rs
+          {/* Title row */}
+          <div className="pt-2 sm:pt-4 flex items-baseline justify-between shrink-0">
+            <h2 className="font-['Sora'] font-semibold text-[44px] sm:text-[64px] md:text-[80px] lg:text-[92px] leading-[1.0] tracking-[-0.02em]">
+              <span className="grad-text g-bkbl inline-block pb-2">Partners</span>
             </h2>
             <span className="hidden sm:inline-block font-['JetBrains_Mono'] text-xs uppercase tracking-widest text-slate-500 font-semibold bg-white/70 px-3 py-1 rounded-full border border-slate-300">
               GLOBAL ENTERPRISE ECOSYSTEM
             </span>
           </div>
 
-          {/* 6 Company Cards in 3x2 Grid with Real Logos */}
-          <div className="w-full flex-1 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 lg:gap-7 items-center mt-5 sm:mt-7 max-h-[580px] overflow-y-auto lg:overflow-visible pr-1 sm:pr-0">
+          {/* Cards grid: takes the leftover height and scrolls once the slide has arrived */}
+          <div
+            className={`w-full flex-1 min-h-0 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 content-start gap-5 lg:gap-7 mt-3 sm:mt-4 pt-2 pb-6 px-1 [scrollbar-width:thin] ${
+              partnersReady ? 'overflow-y-auto' : 'overflow-hidden'
+            }`}
+          >
             {partnerData.map((partner) => (
               <div
                 key={partner.id}
@@ -467,7 +458,6 @@ export const WhyTrustUsSection = () => {
             ))}
           </div>
         </div>
-
       </div>
 
       {/* Bottom Scroll Hint Pill */}
@@ -482,7 +472,7 @@ export const WhyTrustUsSection = () => {
         </div>
 
         <div className="hidden sm:flex items-center gap-3">
-          <span className="text-[11px] text-slate-400">GSAP PINNED STAGE</span>
+          
           <div className="w-16 h-1 bg-slate-300 rounded-full overflow-hidden">
             <div
               className="h-full bg-blue-600 transition-all duration-300"

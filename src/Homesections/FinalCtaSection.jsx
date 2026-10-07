@@ -1,35 +1,23 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowRight } from 'lucide-react';
+import { PlexusCanvas } from './PlexusCanvas'; // adjust the path to where PlexusCanvas.jsx lives
 
 export const FinalCtaSection = () => {
   return (
-    <section id="contact" className="relative bg-[#E7EEF9] text-[#0B1220] py-24 lg:py-28 overflow-hidden">
-      {/* Constellation SVG in background */}
-      <svg
-        className="absolute -left-10 -bottom-10 w-105 h-85 opacity-40 pointer-events-none select-none"
-        viewBox="0 0 400 320"
-        fill="none"
-      >
-        <g stroke="#94A3B8" strokeWidth="0.8" opacity="0.6">
-          <line x1="20" y1="280" x2="120" y2="200" />
-          <line x1="120" y1="200" x2="90" y2="100" />
-          <line x1="120" y1="200" x2="220" y2="230" />
-          <line x1="220" y1="230" x2="260" y2="150" />
-          <line x1="90" y1="100" x2="180" y2="60" />
-          <line x1="220" y1="230" x2="180" y2="60" />
-          <line x1="20" y1="280" x2="60" y2="180" />
-        </g>
-        <g fill="#64748B">
-          <circle cx="20" cy="280" r="2.5" />
-          <circle cx="120" cy="200" r="2.5" />
-          <circle cx="90" cy="100" r="2.5" />
-          <circle cx="220" cy="230" r="2.5" />
-          <circle cx="260" cy="150" r="2.5" />
-          <circle cx="180" cy="60" r="2.5" />
-          <circle cx="60" cy="180" r="2.5" />
-        </g>
-      </svg>
+    <section
+      id="contact"
+      className="relative bg-[#E7EEF9] text-[#0B1220] py-24 lg:py-28 overflow-hidden"
+    >
+      {/* Constellation / Plexus Canvas graphic on the left */}
+      <div className="absolute left-0 top-0 w-full sm:w-[500px] h-full pointer-events-none opacity-80 z-0">
+        <PlexusCanvas
+          nodeCount={48}
+          dotColor="rgba(15, 23, 42, 0.65)"
+          lineColor="rgba(29, 78, 216, 0.28)"
+          accentColor="#1D4ED8"
+        />
+      </div>
 
       <div className="relative max-w-310 mx-auto px-6 sm:px-10 flex flex-col md:flex-row justify-between items-start md:items-center gap-10 z-10">
         {/* Left Heading */}

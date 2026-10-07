@@ -5,7 +5,7 @@ import { CheckCircle2, Copy, Loader2, Sparkles, RefreshCw } from 'lucide-react';
 export const ContactForm = () => {
   const [fullName, setFullName] = useState('');
   const [email, setEmail] = useState('');
-  const [discipline, setDiscipline] = useState('[02] Artificial Intelligence');
+  const [discipline, setDiscipline] = useState('Artificial Intelligence');
   const [message, setMessage] = useState('');
 
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -95,11 +95,11 @@ export const ContactForm = () => {
   return (
     <div className="w-full flex flex-col items-center lg:items-start select-none">
       {/* Figma: "Get in Touch" Gradient Title */}
-      <h1 className="font-sora font-semibold text-5xl sm:text-7xl lg:text-8xl xl:text-[92px] 2xl:text-[96px] tracking-tight leading-[1.08] mb-6 sm:mb-8 text-center lg:text-left">
-        <span className="bg-gradient-to-r from-[#1D4ED8] via-[#2563EB] to-[#34D399] bg-clip-text text-transparent filter drop-shadow-[0_4px_24px_rgba(29,78,216,0.45)] inline-block">
-          Get in Touch
-        </span>
-      </h1>
+<h1 className="font-sora font-semibold text-5xl sm:text-7xl lg:text-8xl xl:text-[92px] 2xl:text-[96px] tracking-tight leading-[1.08] mb-6 sm:mb-8 text-center lg:text-left whitespace-nowrap">
+  <span className="bg-gradient-to-r from-[#1D4ED8] via-[#2563EB] to-[#34D399] bg-clip-text text-transparent filter drop-shadow-[0_4px_24px_rgba(29,78,216,0.45)] inline-block">
+    Get in Touch
+  </span>
+</h1>
 
       {/* Figma: Group 35 & Rectangle 94 Container */}
       <div className="w-full max-w-[760px] 2xl:max-w-[815px] p-6 sm:p-10 lg:p-12 rounded-[24px] bg-[#E2E8F0]/[0.12] backdrop-blur-[24px] border border-white/[0.16] shadow-[0_20px_60px_rgba(0,0,0,0.6)] relative overflow-hidden transition-all duration-300">
@@ -183,9 +183,9 @@ export const ContactForm = () => {
               </label>
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
                 {[
-                  '[01] Digital Infrastructure',
-                  '[02] Artificial Intelligence',
-                  '[03] Connected IoT Systems',
+                  'Digital Infrastructure',
+                  'Artificial Intelligence',
+                  'Connected IoT Systems',
                 ].map((d) => (
                   <button
                     type="button"

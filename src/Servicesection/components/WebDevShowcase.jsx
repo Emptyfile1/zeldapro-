@@ -93,7 +93,7 @@ export const WebDevShowcase = ({ onExploreTech }) => {
                 {/* Address bar */}
                 <div className="bg-white px-2.5 py-0.5 rounded text-[10px] text-slate-500 font-mono flex items-center gap-1 border border-slate-200/80 max-w-[200px] truncate">
                   <span className="text-emerald-500 font-bold">https://</span>
-                  <span>enterprise.eldor.dev</span>
+                  <span>enterprise.Zeldapro.dev</span>
                 </div>
                 <div className="flex items-center gap-1">
                   <button

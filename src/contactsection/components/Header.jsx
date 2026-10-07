@@ -83,7 +83,7 @@ export const Header = ({ activeTab, onSelectTab }) => {
           </div>
 
           <div className="pt-3 border-t border-white/10 flex items-center justify-between text-xs font-mono-code text-slate-400">
-            <span>ZELDAPRO LABS</span>
+            <span>ZELDAPRO</span>
             <span className="text-emerald-400">CORE: ONLINE</span>
           </div>
         </div>

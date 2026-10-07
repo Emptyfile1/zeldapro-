@@ -84,7 +84,7 @@ export const WhoWeAreSection = () => {
     <section
       id="who-we-are"
       ref={sectionRef}
-      className="w-full bg-white py-24 sm:py-32 px-6 sm:px-12 lg:px-24 overflow-hidden"
+      className="w-full bg-white py-20 sm:py-28 px-6 sm:px-12 lg:px-16 overflow-hidden"
     >
       <div className="max-w-[1725px] mx-auto">
         {/* Section Heading: "Who we are" */}
@@ -98,30 +98,38 @@ export const WhoWeAreSection = () => {
         </div>
 
         {/* Row 1: Focus on understanding the challenge */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-center mb-32 sm:mb-44">
-          <div ref={row1TextRef} className="lg:col-span-6 xl:col-span-6">
-            <p className="font-['Sora'] font-semibold text-[32px] sm:text-[46px] md:text-[54px] lg:text-[64px] leading-[1.12] lg:leading-[70px] tracking-[-0.02em] text-black">
-              Our focus is on understanding the challenge, identifying the opportunity and designing the right technology solution around it.
-            </p>
-          </div>
+{/* Row 1 */}
+<div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-center mb-32 sm:mb-44">
+  <div ref={row1TextRef} className="lg:col-span-7">
+    <p className="font-['Sora'] font-semibold text-[26px] sm:text-[32px] md:text-[38px] lg:text-[42px] xl:text-[46px] leading-[1.2] tracking-[-0.02em] text-balance max-w-[640px] text-black">
+      Our focus is on understanding the challenge,{' '}
+      <span className="text-black">
+        identifying the opportunity and designing the right technology solution around it.
+      </span>
+    </p>
+  </div>
 
-          <div ref={row1VisualRef} className="lg:col-span-6 xl:col-span-6 flex justify-center lg:justify-end">
-            <SmartHomeVisual />
-          </div>
-        </div>
+  <div ref={row1VisualRef} className="lg:col-span-5 flex justify-center lg:justify-end">
+    <SmartHomeVisual />
+  </div>
+</div>
 
         {/* Row 2: From digital platforms and intelligent applications */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-center">
-          <div ref={row2TextRef} className="lg:col-span-6 xl:col-span-6 order-1 lg:order-1">
-            <p className="font-['Sora'] font-semibold text-[32px] sm:text-[46px] md:text-[54px] lg:text-[64px] leading-[1.12] lg:leading-[70px] tracking-[-0.02em] text-black">
-              From digital platforms and intelligent applications to connected devices and AI-powered solutions, we help turn 'ideas' into technology that can make a difference.
-            </p>
-          </div>
+        {/* Row 2 */}
+<div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-center">
+  <div ref={row2TextRef} className="lg:col-span-7 order-1">
+    <p className="font-['Sora'] font-semibold text-[26px] sm:text-[32px] md:text-[38px] lg:text-[42px] xl:text-[46px] leading-[1.2] tracking-[-0.02em] text-balance max-w-[640px] text-black">
+      From digital platforms to connected devices and AI,{' '}
+      <span className="text-black">
+        we turn ideas into technology that makes a difference.
+      </span>
+    </p>
+  </div>
 
-          <div ref={row2VisualRef} className="lg:col-span-6 xl:col-span-6 order-2 lg:order-2 flex justify-center lg:justify-end">
-            <DigitalPlatformVisual />
-          </div>
-        </div>
+  <div ref={row2VisualRef} className="lg:col-span-5 order-2 flex justify-center lg:justify-end">
+    <DigitalPlatformVisual />
+  </div>
+</div>
       </div>
     </section>
   );
