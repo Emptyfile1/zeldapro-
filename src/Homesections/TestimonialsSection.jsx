@@ -184,16 +184,15 @@ export const TestimonialsSection = () => {
         ease: 'back.out(1.2)',
       });
 
-      gsap.from('.trusted-logo-item', {
+      gsap.from('.trusted-by-section', {
         scrollTrigger: {
           trigger: '.trusted-by-section',
           start: 'top 88%',
           once: true,
         },
-        y: 25,
+        y: 30,
         opacity: 0,
-        stagger: 0.08,
-        duration: 0.6,
+        duration: 0.8,
         ease: 'power2.out',
       });
     },
@@ -217,6 +216,10 @@ export const TestimonialsSection = () => {
     { name: 'Fieldworks', badge: 'DATA' },
     { name: 'Harbor', badge: 'SECURITY' },
     { name: 'Orbital', badge: 'LABS' },
+    { name: 'Synthetix', badge: 'AI CORE' },
+    { name: 'Apex Dynamics', badge: 'ROBOTICS' },
+    { name: 'Coreflow', badge: 'INFRA' },
+    { name: 'Prism', badge: 'ANALYTICS' },
   ];
 
   const current = testimonials[activeIndex];
@@ -379,25 +382,34 @@ export const TestimonialsSection = () => {
           </p>
         </div>
 
-        {/* Trusted By Client Logos Section */}
-        <div className="trusted-by-section mt-24 pt-14 border-t border-slate-300/60">
-          <h3 className="font-heading font-bold text-2xl sm:text-3xl text-[#0B1220] mb-10 tracking-tight">
+        {/* Infinite Scroll of Company Names (Marquee) */}
+        <div className="trusted-by-section mt-24 pt-14 border-t border-slate-300/60 overflow-hidden">
+          <h3 className="font-heading font-bold text-2xl sm:text-3xl text-[#0B1220] mb-10 tracking-tight text-center">
             Trusted by modern leaders
           </h3>
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4 sm:gap-6 max-w-5xl mx-auto items-center">
-            {clientLogos.map((client) => (
-              <div
-                key={client.name}
-                className="trusted-logo-item group relative p-4 rounded-2xl bg-white/50 hover:bg-white/90 border border-white/70 shadow-sm hover:shadow-md backdrop-blur-md transition-all duration-300 hover:-translate-y-1 cursor-default"
-              >
-                <div className="font-heading font-bold text-lg sm:text-xl text-slate-800 group-hover:text-blue-600 transition-colors">
-                  {client.name}
+
+          <div className="relative w-full overflow-hidden py-3">
+            {/* Left & Right gradient edge fades */}
+            <div className="absolute left-0 top-0 bottom-0 w-16 sm:w-28 bg-gradient-to-r from-[#E7EEF9] via-[#E7EEF9]/80 to-transparent pointer-events-none z-10" />
+            <div className="absolute right-0 top-0 bottom-0 w-16 sm:w-28 bg-gradient-to-l from-[#E7EEF9] via-[#E7EEF9]/80 to-transparent pointer-events-none z-10" />
+
+            {/* Infinite Marquee Track (seamless loop with duplicated list) */}
+            <div className="animate-marquee flex items-center gap-4 sm:gap-6">
+              {[...clientLogos, ...clientLogos].map((client, idx) => (
+                <div
+                  key={`${client.name}-${idx}`}
+                  className="group relative px-6 py-3.5 rounded-2xl bg-white/70 hover:bg-white border border-white/90 shadow-[0_2px_8px_rgba(0,0,0,0.04)] hover:shadow-md backdrop-blur-md transition-all duration-300 hover:-translate-y-0.5 flex items-center gap-3 shrink-0 cursor-default"
+                >
+                  <span className="w-2 h-2 rounded-full bg-blue-600/70 group-hover:scale-125 transition-transform" />
+                  <span className="font-heading font-bold text-base sm:text-lg text-slate-800 group-hover:text-blue-600 transition-colors whitespace-nowrap">
+                    {client.name}
+                  </span>
+                  <span className="font-mono text-[9px] uppercase tracking-widest text-slate-500 bg-slate-100 group-hover:bg-blue-50 group-hover:text-blue-700 px-2 py-0.5 rounded-md border border-slate-200/70 group-hover:border-blue-200/70 transition-colors whitespace-nowrap">
+                    {client.badge}
+                  </span>
                 </div>
-                <div className="font-mono text-[9px] uppercase tracking-widest text-slate-400 group-hover:text-blue-500 mt-0.5">
-                  {client.badge}
-                </div>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
         </div>
       </div>
