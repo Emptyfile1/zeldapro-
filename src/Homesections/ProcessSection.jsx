@@ -159,7 +159,8 @@ export const ProcessSection = () => {
 
     const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     if (reduce) {
-      gsap.set('[data-media], [data-title], [data-body]', { clearProps: 'all' });
+      // Only clear what GSAP animates. 'all' would wipe the inline font size and gradient.
+      gsap.set('[data-media], [data-title], [data-body]', { clearProps: 'opacity,transform' });
       return () => {
         clearTimeout(t1);
         clearTimeout(t2);
@@ -173,7 +174,7 @@ export const ProcessSection = () => {
         y: 25,
         duration: 0.8,
         ease: 'power3.out',
-        clearProps: 'all',
+        clearProps: 'opacity,transform',
         scrollTrigger: { trigger: titleRef.current, start: 'top 90%', once: true },
       });
 
@@ -253,20 +254,13 @@ export const ProcessSection = () => {
             // OUR METHODOLOGY
           </span>
         </div>
+
+        {/* Size lives in classes (not inline style) so GSAP can never wipe it */}
         <h2
           ref={titleRef}
-          className="mb-16 text-center font-heading font-semibold tracking-[-0.02em] lg:mb-[8vw]"
-          style={{
-            fontSize: 'clamp(40px, 5.6vw, 96px)',
-            lineHeight: 1.1,
-            background: 'linear-gradient(90deg, #000000 23%, #1D4ED8 50%, #000000 79%)',
-            WebkitBackgroundClip: 'text',
-            backgroundClip: 'text',
-            WebkitTextFillColor: 'transparent',
-            color: 'transparent',
-          }}
+          className="mb-16 text-center font-heading font-semibold tracking-[-0.02em] lg:mb-[8vw] text-[clamp(44px,7.5vw,128px)] leading-[1.1]"
         >
-          From Idea to Impact
+          <span className="grad-text g-bkbl inline-block pb-2">From Idea to Impact</span>
         </h2>
 
         <div ref={wrapRef} className="relative flex flex-col gap-16 lg:gap-[7vw]">

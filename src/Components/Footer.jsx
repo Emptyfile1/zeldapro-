@@ -1,5 +1,23 @@
 import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import logo from '../assets/Zeldalogo.png';
+
+// The site has 4 pages. Change a route here and every link updates.
+const ROUTES = {
+  home: '/',
+  about: '/about',
+  services: '/services',
+  contact: '/contact',
+};
+
+const disciplines = [
+  { label: 'Digital Infrastructure', to: ROUTES.services },
+  { label: 'Artificial Intelligence', to: ROUTES.services },
+  { label: 'Connected IoT Systems', to: ROUTES.services },
+];
+
+const scrollTop = () => window.scrollTo(0, 0);
+
 export const Footer = () => {
   const [currentUtcTime, setCurrentUtcTime] = useState('');
 
@@ -21,9 +39,9 @@ export const Footer = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-10 lg:gap-8 pb-14 border-b border-white/10">
           {/* Brand Info */}
           <div className="lg:col-span-4">
-            <div className="flex items-center gap-2 mb-5">
+            <Link to={ROUTES.home} onClick={scrollTop} className="flex items-center gap-2 mb-5">
               <img src={logo} alt="Zeldapro" className="h-8 w-auto" />
-            </div>
+            </Link>
 
             <address className="not-italic text-sm leading-relaxed text-white/65 max-w-sm mb-4">
               1st Floor, 1B-102 or 1B, Parinee Crescenzo, G Block, BKC, Bandra Kurla Complex,
@@ -47,15 +65,17 @@ export const Footer = () => {
               // DISCIPLINES
             </h4>
             <ul className="space-y-2.5 text-sm text-white/90">
-              <li className="hover:text-white transition-colors cursor-pointer">
-                Digital Infrastructure
-              </li>
-              <li className="hover:text-white transition-colors cursor-pointer">
-                Artificial Intelligence
-              </li>
-              <li className="hover:text-white transition-colors cursor-pointer">
-                Connected IoT Systems
-              </li>
+              {disciplines.map((item) => (
+                <li key={item.label}>
+                  <Link
+                    to={item.to}
+                    onClick={scrollTop}
+                    className="hover:text-white transition-colors"
+                  >
+                    {item.label}
+                  </Link>
+                </li>
+              ))}
             </ul>
           </div>
 
@@ -66,24 +86,32 @@ export const Footer = () => {
             </h4>
             <ul className="space-y-2.5 text-sm text-white/85">
               <li>
-                <a href="#about" className="hover:text-white transition-colors">
-                  About 
-                </a>
+                <Link
+                  to={ROUTES.about}
+                  onClick={scrollTop}
+                  className="hover:text-white transition-colors"
+                >
+                  About
+                </Link>
               </li>
               <li>
-                <a href="#services" className="hover:text-white transition-colors">
+                <Link
+                  to={ROUTES.services}
+                  onClick={scrollTop}
+                  className="hover:text-white transition-colors"
+                >
                   Research Archive
-                </a>
+                </Link>
               </li>
+
               <li>
-                <a href="#work" className="font-semibold text-white hover:text-blue-300 transition-colors">
-                  Transmissions
-                </a>
-              </li>
-              <li>
-                <a href="#contact" className="hover:text-white transition-colors">
-                  Contact 
-                </a>
+                <Link
+                  to={ROUTES.contact}
+                  onClick={scrollTop}
+                  className="hover:text-white transition-colors"
+                >
+                  Contact
+                </Link>
               </li>
             </ul>
           </div>
