@@ -62,7 +62,7 @@ export const Footer = () => {
           {/* Col 1: Disciplines */}
           <div className="lg:col-span-3 lg:border-l lg:border-white/10 lg:pl-8">
             <h4 className="font-mono text-xs tracking-wider text-white/50 mb-4 uppercase">
-              // DISCIPLINES
+            SERVICES
             </h4>
             <ul className="space-y-2.5 text-sm text-white/90">
               {disciplines.map((item) => (
@@ -82,7 +82,7 @@ export const Footer = () => {
           {/* Col 2: Monographs */}
           <div className="lg:col-span-2 lg:border-l lg:border-white/10 lg:pl-8">
             <h4 className="font-mono text-xs tracking-wider text-white/50 mb-4 uppercase">
-              // MONOGRAPHS
+            EXPLORE 
             </h4>
             <ul className="space-y-2.5 text-sm text-white/85">
               <li>
