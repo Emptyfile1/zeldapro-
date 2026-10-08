@@ -122,7 +122,7 @@ export const AppDevShowcase = ({ onExploreTech }) => {
         </div>
 
         {/* Central Smartphone Device */}
-        <div className="relative z-20 w-52 sm:w-60 aspect-[9/18] bg-[#0E131F] rounded-[36px] p-2.5 shadow-[0_20px_50px_rgba(0,0,0,0.35)] border-4 border-slate-300/80 flex flex-col">
+        <div className="relative z-20 h-[108%] w-auto aspect-[9/18] bg-[#0E131F] rounded-[36px] p-2.5 shadow-[0_20px_50px_rgba(0,0,0,0.35)] border-4 border-slate-300/80 flex flex-col">
           {/* Top Dynamic Island */}
           <div className="absolute top-4 left-1/2 -translate-x-1/2 w-20 h-4 bg-black rounded-full z-30 flex items-center justify-center gap-2 px-2">
             <div className="w-1.5 h-1.5 rounded-full bg-blue-500 animate-pulse" />
@@ -144,7 +144,7 @@ export const AppDevShowcase = ({ onExploreTech }) => {
             <div className="flex items-center justify-between pb-2 border-b border-slate-100">
               <div>
                 <span className="block text-[8px] text-slate-400 uppercase tracking-wider font-sora">Workspace</span>
-                <span className="font-sora font-semibold text-xs text-slate-800">Eldor Mobile</span>
+                <span className="font-sora font-semibold text-xs text-slate-800">Zeldapro</span>
               </div>
               <div className="p-1 rounded-full bg-slate-100 text-slate-600">
                 <Bell className="w-3 h-3" />
