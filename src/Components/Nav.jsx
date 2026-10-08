@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Link, NavLink } from 'react-router-dom';
+import { Link, NavLink, useLocation } from 'react-router-dom';
 import { Menu, X, ArrowUpRight } from 'lucide-react';
 import logo from '../assets/Zeldalogo.png';
 
@@ -9,13 +9,16 @@ export const Navbar = ({ onOpenContact }) => {
   const [hidden, setHidden] = useState(false);
   const lastScrollY = useRef(0);
 
+  const location = useLocation();
+
+  // Pages with full white backgrounds
+  const isLightPage = ['/about', '/services'].includes(location.pathname);
+
   useEffect(() => {
     const handleScroll = () => {
       const currentScrollY = window.scrollY;
       setScrolled(currentScrollY > 20);
 
-      // Don't hide the navbar while the mobile menu is open, and don't
-      // hide it until the user has scrolled past a small threshold near the top.
       if (mobileMenuOpen) {
         setHidden(false);
       } else if (currentScrollY > lastScrollY.current && currentScrollY > 80) {
@@ -41,9 +44,17 @@ export const Navbar = ({ onOpenContact }) => {
   return (
     <header
       id="site-header"
-      className={`sticky top-0 z-50 transition-all duration-300 ease-in-out bg-[#546491] border-b ${
-    scrolled ? 'border-white/20 shadow-lg shadow-black/20' : 'border-white/10'
-  } ${hidden ? '-translate-y-full' : 'translate-y-0'}`}
+      className={`sticky top-0 z-50 backdrop-blur-md transition-all duration-300 ease-in-out border-b ${
+        isLightPage
+          ? 'bg-white/80 border-slate-200/80 shadow-sm'
+          : 'bg-[#080d1a]/80 border-white/10'
+      } ${
+        scrolled
+          ? isLightPage
+            ? 'shadow-md shadow-slate-900/5 bg-white/95'
+            : 'shadow-lg shadow-black/40 border-white/20 bg-[#080d1a]/95'
+          : ''
+      } ${hidden ? '-translate-y-full' : 'translate-y-0'}`}
     >
       <nav className="max-w-[1240px] mx-auto px-6 sm:px-10 h-20 flex items-center justify-between">
         {/* Brand Logo */}
@@ -51,7 +62,9 @@ export const Navbar = ({ onOpenContact }) => {
           <img
             src={logo}
             alt="Zeldapro"
-            className="h-18 w-auto select-none transition-transform duration-300 group-hover:scale-105"
+            className={`h-16 w-auto select-none transition-transform duration-300 group-hover:scale-105 ${
+              isLightPage ? 'drop-shadow-[0_2px_8px_rgba(0,0,0,0.25)]' : ''
+            }`}
           />
         </Link>
 
@@ -63,8 +76,14 @@ export const Navbar = ({ onOpenContact }) => {
                 to={link.to}
                 end={link.to === '/'}
                 className={({ isActive }) =>
-                  `text-[15px] font-medium transition-opacity duration-200 hover:opacity-100 ${
-                    isActive ? 'text-white opacity-100' : 'text-white/90 opacity-80'
+                  `text-[15px] font-medium transition-all duration-200 ${
+                    isLightPage
+                      ? isActive
+                        ? 'text-blue-600 font-semibold'
+                        : 'text-slate-700 hover:text-blue-600'
+                      : isActive
+                      ? 'text-white font-semibold'
+                      : 'text-slate-300 hover:text-white'
                   }`
                 }
               >
@@ -80,7 +99,7 @@ export const Navbar = ({ onOpenContact }) => {
             type="button"
             onClick={onOpenContact}
             id="nav-connect-btn"
-            className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-semibold text-white bg-blue-700 hover:bg-blue-600 transition-colors duration-200 shadow-sm cursor-pointer"
+            className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-semibold text-white bg-blue-600 hover:bg-blue-500 transition-colors duration-200 shadow-sm cursor-pointer"
           >
             <span>Let's Connect</span>
             <ArrowUpRight className="w-4 h-4" />
@@ -93,7 +112,9 @@ export const Navbar = ({ onOpenContact }) => {
             type="button"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
             id="mobile-menu-toggle"
-            className="p-2 text-white/90 hover:text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer"
+            className={`p-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer ${
+              isLightPage ? 'text-slate-800 hover:text-blue-600' : 'text-white/90 hover:text-white'
+            }`}
             aria-label="Toggle Navigation Menu"
           >
             {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
@@ -103,14 +124,24 @@ export const Navbar = ({ onOpenContact }) => {
 
       {/* Mobile Menu Dropdown */}
       {mobileMenuOpen && (
-        <div className="md:hidden bg-[#0A0D14] border-b border-white/10 px-6 py-5 shadow-2xl animate-in slide-in-from-top duration-200">
+        <div
+          className={`md:hidden px-6 py-5 border-b shadow-2xl animate-in slide-in-from-top duration-200 ${
+            isLightPage
+              ? 'bg-white border-slate-200'
+              : 'bg-[#0A0D14] border-white/10'
+          }`}
+        >
           <ul className="flex flex-col gap-4 list-none">
             {navLinks.map((link) => (
               <li key={link.name}>
                 <Link
                   to={link.to}
                   onClick={() => setMobileMenuOpen(false)}
-                  className="block text-white/90 hover:text-white text-base font-medium py-1.5 border-b border-white/5"
+                  className={`block text-base font-medium py-1.5 border-b ${
+                    isLightPage
+                      ? 'text-slate-800 hover:text-blue-600 border-slate-100'
+                      : 'text-white/90 hover:text-white border-white/5'
+                  }`}
                 >
                   {link.name}
                 </Link>
@@ -123,7 +154,7 @@ export const Navbar = ({ onOpenContact }) => {
                   setMobileMenuOpen(false);
                   onOpenContact();
                 }}
-                className="w-full py-2.5 px-4 rounded-lg bg-blue-600 text-white font-medium text-center flex items-center justify-center gap-2 cursor-pointer"
+                className="w-full py-2.5 px-4 rounded-lg bg-blue-600 hover:bg-blue-500 text-white font-medium text-center flex items-center justify-center gap-2 cursor-pointer transition-colors"
               >
                 <span>Let's Connect</span>
                 <ArrowUpRight className="w-4 h-4" />
