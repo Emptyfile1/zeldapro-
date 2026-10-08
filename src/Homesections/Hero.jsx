@@ -202,7 +202,7 @@ export const Hero = () => {
         <div
           ref={diagramRef}
           style={{ transformStyle: 'preserve-3d' }}
-          className="relative w-full max-w-[560px] mx-auto h-[420px] sm:h-[480px] lg:h-[520px] will-change-transform"
+          className="relative w-full max-w-[560px] mx-auto h-[420px] sm:h-[480px] lg:h-[520px] will-change-transform lg:self-start lg:-mt-16"
         >
           <Polyhedron className="w-full h-full" />
 

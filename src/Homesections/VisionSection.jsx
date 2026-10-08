@@ -3,6 +3,7 @@ import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { useGSAP } from '@gsap/react';
 import visionImage from '../assets/Archetecturingdata.png';
+import visionImage2 from '../assets/digitaltransformation.png';
 gsap.registerPlugin(ScrollTrigger);
 
 export const VisionSection = () => {
@@ -102,7 +103,7 @@ export const VisionSection = () => {
           {/* Render Card 1 */}
           <div className="vision-card-1 w-full aspect-[16/11] min-h-[260px] rounded-2xl overflow-hidden bg-gradient-to-br from-[#EEF1F5] to-[#C9D2DE] relative border border-white/80 shadow-md">
             <img
-              src="https://images.unsplash.com/photo-1558494949-ef010cbdcc31?w=1200&q=80&auto=format&fit=crop"
+              src={visionImage2}
               alt="Server room data center cabling, representing digital infrastructure"
               className="w-full h-full object-cover"
               loading="lazy"

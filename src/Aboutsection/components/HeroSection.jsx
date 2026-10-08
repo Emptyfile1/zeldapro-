@@ -55,7 +55,7 @@ export const HeroSection = () => {
           {/* Main Headline matching Figma text and font Sora 96px */}
           <h1
             ref={headlineRef}
-            className="font-['Sora'] font-semibold text-[46px] sm:text-[64px] md:text-[80px] lg:text-[96px] leading-[1.02] sm:leading-[1.0] lg:leading-[95px] tracking-[-0.02em] text-black"
+            className="font-['Sora'] font-semibold text-[46px] sm:text-[64px] md:text-[80px] lg:text-[86px] leading-[1.02] sm:leading-[1.0] lg:leading-[95px] tracking-[-0.02em] text-black"
           >
             <div className="overflow-hidden">
               <span className="hero-line block">We don't just</span>
