@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Link, NavLink, useLocation } from 'react-router-dom';
+import { Link, NavLink } from 'react-router-dom';
 import { Menu, X, ArrowUpRight } from 'lucide-react';
 import logo from '../assets/Zeldalogo.png';
 
@@ -8,11 +8,6 @@ export const Navbar = ({ onOpenContact }) => {
   const [scrolled, setScrolled] = useState(false);
   const [hidden, setHidden] = useState(false);
   const lastScrollY = useRef(0);
-
-  const location = useLocation();
-
-  // Pages with full white backgrounds
-  const isLightPage = ['/about', '/services'].includes(location.pathname);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -44,16 +39,8 @@ export const Navbar = ({ onOpenContact }) => {
   return (
     <header
       id="site-header"
-      className={`sticky top-0 z-50 backdrop-blur-md transition-all duration-300 ease-in-out border-b ${
-        isLightPage
-          ? 'bg-white/80 border-slate-200/80 shadow-sm'
-          : 'bg-[#080d1a]/80 border-white/10'
-      } ${
-        scrolled
-          ? isLightPage
-            ? 'shadow-md shadow-slate-900/5 bg-white/95'
-            : 'shadow-lg shadow-black/40 border-white/20 bg-[#080d1a]/95'
-          : ''
+      className={`sticky top-0 z-50 backdrop-blur-md transition-all duration-300 ease-in-out border-b border-blue-900/10 bg-[#f0f4fc]/90 ${
+        scrolled ? 'shadow-md shadow-blue-950/10 bg-[#f0f4fc]/95' : ''
       } ${hidden ? '-translate-y-full' : 'translate-y-0'}`}
     >
       <nav className="max-w-[1240px] mx-auto px-6 sm:px-10 h-20 flex items-center justify-between">
@@ -62,9 +49,7 @@ export const Navbar = ({ onOpenContact }) => {
           <img
             src={logo}
             alt="Zeldapro"
-            className={`h-16 w-auto select-none transition-transform duration-300 group-hover:scale-105 ${
-              isLightPage ? 'drop-shadow-[0_2px_8px_rgba(0,0,0,0.25)]' : ''
-            }`}
+            className="h-16 w-auto select-none transition-transform duration-300 group-hover:scale-105 drop-shadow-[0_2px_6px_rgba(15,23,42,0.2)]"
           />
         </Link>
 
@@ -77,13 +62,9 @@ export const Navbar = ({ onOpenContact }) => {
                 end={link.to === '/'}
                 className={({ isActive }) =>
                   `text-[15px] font-medium transition-all duration-200 ${
-                    isLightPage
-                      ? isActive
-                        ? 'text-blue-600 font-semibold'
-                        : 'text-slate-700 hover:text-blue-600'
-                      : isActive
-                      ? 'text-white font-semibold'
-                      : 'text-slate-300 hover:text-white'
+                    isActive
+                      ? 'text-blue-700 font-semibold'
+                      : 'text-slate-700 hover:text-blue-600'
                   }`
                 }
               >
@@ -99,7 +80,7 @@ export const Navbar = ({ onOpenContact }) => {
             type="button"
             onClick={onOpenContact}
             id="nav-connect-btn"
-            className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-semibold text-white bg-blue-600 hover:bg-blue-500 transition-colors duration-200 shadow-sm cursor-pointer"
+            className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-semibold text-white bg-blue-600 hover:bg-blue-700 transition-colors duration-200 shadow-sm cursor-pointer"
           >
             <span>Let's Connect</span>
             <ArrowUpRight className="w-4 h-4" />
@@ -112,9 +93,7 @@ export const Navbar = ({ onOpenContact }) => {
             type="button"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
             id="mobile-menu-toggle"
-            className={`p-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer ${
-              isLightPage ? 'text-slate-800 hover:text-blue-600' : 'text-white/90 hover:text-white'
-            }`}
+            className="p-2 rounded-lg text-slate-700 hover:text-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer"
             aria-label="Toggle Navigation Menu"
           >
             {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
@@ -124,24 +103,14 @@ export const Navbar = ({ onOpenContact }) => {
 
       {/* Mobile Menu Dropdown */}
       {mobileMenuOpen && (
-        <div
-          className={`md:hidden px-6 py-5 border-b shadow-2xl animate-in slide-in-from-top duration-200 ${
-            isLightPage
-              ? 'bg-white border-slate-200'
-              : 'bg-[#0A0D14] border-white/10'
-          }`}
-        >
+        <div className="md:hidden px-6 py-5 border-b border-blue-900/10 bg-[#f0f4fc]/98 backdrop-blur-md shadow-xl animate-in slide-in-from-top duration-200">
           <ul className="flex flex-col gap-4 list-none">
             {navLinks.map((link) => (
               <li key={link.name}>
                 <Link
                   to={link.to}
                   onClick={() => setMobileMenuOpen(false)}
-                  className={`block text-base font-medium py-1.5 border-b ${
-                    isLightPage
-                      ? 'text-slate-800 hover:text-blue-600 border-slate-100'
-                      : 'text-white/90 hover:text-white border-white/5'
-                  }`}
+                  className="block text-slate-800 hover:text-blue-600 text-base font-medium py-1.5 border-b border-slate-200/50"
                 >
                   {link.name}
                 </Link>
@@ -154,7 +123,7 @@ export const Navbar = ({ onOpenContact }) => {
                   setMobileMenuOpen(false);
                   onOpenContact();
                 }}
-                className="w-full py-2.5 px-4 rounded-lg bg-blue-600 hover:bg-blue-500 text-white font-medium text-center flex items-center justify-center gap-2 cursor-pointer transition-colors"
+                className="w-full py-2.5 px-4 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-medium text-center flex items-center justify-center gap-2 cursor-pointer transition-colors"
               >
                 <span>Let's Connect</span>
                 <ArrowUpRight className="w-4 h-4" />
