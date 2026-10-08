@@ -538,7 +538,7 @@ export const HypercubeVisual = () => {
       >
         <span className="text-[11px] tracking-[0.16em] uppercase font-mono-code text-slate-400 flex items-center gap-2">
           <span className="w-2 h-2 rounded-full bg-cyan-400 animate-ping inline-block" />
-          Interactive 3D Lattice // Drag to Rotate
+          Drag to Rotate
         </span>
       </div>
     </div>

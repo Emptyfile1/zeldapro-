@@ -89,7 +89,7 @@ export const ServicesSection = () => {
         {/* Section Heading */}
         <div className="services-header mb-14 text-left max-w-xl">
           <div className="font-mono text-xs text-blue-400 tracking-widest uppercase mb-2">
-            // SPECIALIZED CAPABILITIES
+            
           </div>
           <h2 className="font-heading font-bold text-3xl sm:text-4xl lg:text-5xl text-white">
             Engineering for the next frontier.

@@ -67,7 +67,7 @@ export const CtaBanner = () => {
 
         {/* Left Headline */}
         <div ref={headlineRef} className="max-w-[832px]">
-          <h2 className="font-['Sora'] font-semibold text-[44px] sm:text-[68px] md:text-[84px] lg:text-[96px] leading-[1.0] lg:leading-[90px] tracking-[-0.01em] grad-text g-finalcta">
+          <h2 className="font-['Sora'] font-semibold text-[32px] sm:text-[56px] md:text-[68px] lg:text-[80px] leading-[1.0] lg:leading-[90px] tracking-[-0.01em] grad-text g-finalcta">
             Your vision.
             <br />
             Our engineering.

@@ -93,7 +93,7 @@ export const ContactForm = () => {
   };
 
   return (
-    <div className="w-full flex flex-col items-center lg:items-start select-none">
+    <div className="w-full flex flex-col items-center lg:items-start select-none pt-16 sm:pt-24 lg:pt-32">
       {/* Figma: "Get in Touch" Gradient Title */}
 <h1 className="font-sora font-semibold text-5xl sm:text-7xl lg:text-8xl xl:text-[92px] 2xl:text-[96px] tracking-tight leading-[1.08] mb-6 sm:mb-8 text-center lg:text-left whitespace-nowrap">
   <span className="bg-gradient-to-r from-[#1D4ED8] via-[#2563EB] to-[#34D399] bg-clip-text text-transparent filter drop-shadow-[0_4px_24px_rgba(29,78,216,0.45)] inline-block">

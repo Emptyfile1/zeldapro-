@@ -41,9 +41,9 @@ export const Navbar = ({ onOpenContact }) => {
   return (
     <header
       id="site-header"
-      className={`sticky top-0 z-50 transition-all duration-300 ease-in-out bg-black/95 backdrop-blur-md border-b ${
-        scrolled ? 'border-white/10 shadow-lg shadow-black/20' : 'border-white/6'
-      } ${hidden ? '-translate-y-full' : 'translate-y-0'}`}
+      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ease-in-out bg-[#1a1f2e]/70 backdrop-blur-md border-b ${
+  scrolled ? 'border-white/10 shadow-lg shadow-black/20' : 'border-white/10'
+} ${hidden ? '-translate-y-full' : 'translate-y-0'}`}
     >
       <nav className="max-w-[1240px] mx-auto px-6 sm:px-10 h-20 flex items-center justify-between">
         {/* Brand Logo */}

@@ -30,7 +30,7 @@ const steps = [
   {
     id: 'discover',
     title: 'Discover',
-    tag: 'STAGE 01 // STRATEGY',
+    tag: '',
     side: 'left',
     image: IMG.discover,
     text: 'Every intelligent solution starts with a real-world problem. We begin by deeply understanding your business challenges and identifying the precise opportunities where digital innovation can make a difference.',
@@ -39,7 +39,7 @@ const steps = [
   {
     id: 'connect',
     title: 'Connect',
-    tag: 'STAGE 02 // IOT FABRIC',
+    tag: '',
     side: 'right',
     image: IMG.connect,
     text: 'Data is the foundation. We bridge the gap between your physical operations and the digital landscape, utilizing IoT to ensure your devices, systems, and environments are seamlessly communicating.',
@@ -48,7 +48,7 @@ const steps = [
   {
     id: 'build',
     title: 'Build',
-    tag: 'STAGE 03 // ARCHITECTURE',
+    tag: '',
     side: 'left',
     image: IMG.build,
     text: 'With the blueprint set, we design and develop the core technology. From scalable web platforms to complex software architectures, we build the digital infrastructure that brings your ideas to life.',
@@ -57,7 +57,7 @@ const steps = [
   {
     id: 'intelligence',
     title: 'Intelligence',
-    tag: 'STAGE 04 // AI COGNITION',
+    tag: '',
     side: 'right',
     image: IMG.intelligence,
     text: 'Software connects, but AI empowers. We integrate artificial intelligence into your ecosystem, transforming the way decisions are made and turning continuous data into predictive, actionable intelligence.',
@@ -66,7 +66,7 @@ const steps = [
   {
     id: 'deploy',
     title: 'Deploy',
-    tag: 'STAGE 05 // SCALE & LAUNCH',
+    tag: '',
     side: 'left',
     image: IMG.deploy,
     text: 'We turn concepts into reality. Your integrated solution is securely launched, seamlessly integrated into your daily operations, and built to scale as your business evolves.',
@@ -250,9 +250,6 @@ export const ProcessSection = () => {
     <section id="process" ref={sectionRef} className="relative w-full overflow-hidden bg-[#E2E8F0] px-5 py-20 sm:px-8 lg:py-28">
       <div className="mx-auto max-w-[1725px]">
         <div className="text-center mb-4">
-          <span className="font-mono text-xs uppercase tracking-widest text-blue-700 bg-blue-100/80 px-3 py-1 rounded-full border border-blue-200">
-            // OUR METHODOLOGY
-          </span>
         </div>
 
         {/* Size lives in classes (not inline style) so GSAP can never wipe it */}

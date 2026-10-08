@@ -244,7 +244,7 @@ export default function App() {
               ].map((item, index) => (
                 <li
                   key={index}
-                  onClick={() => openServiceModal('web-dev')}
+                  
                   className="group flex items-center gap-4 cursor-pointer text-base sm:text-xl lg:text-[24px] font-sora font-normal text-black hover:text-blue-700 transition-colors py-1.5"
                 >
                   <span className="w-2.5 h-2.5 sm:w-3 sm:h-3 bg-black group-hover:bg-blue-600 transition-colors shrink-0 rounded-xs" />
@@ -258,7 +258,7 @@ export default function App() {
 
             <div className="mt-8 pt-4">
               <button
-                onClick={() => openServiceModal('web-dev')}
+                
                 className="inline-flex items-center gap-2 text-sm sm:text-base font-semibold text-blue-700 hover:text-blue-900 group cursor-pointer"
               >
                 <span>Explore Full-Stack Architecture & Benchmarks</span>
@@ -269,7 +269,7 @@ export default function App() {
 
           {/* Right Column: Rectangle 91 Showcase */}
           <div ref={webCardRef} className="lg:col-span-5 flex justify-center lg:justify-end">
-            <WebDevShowcase onExploreTech={() => openServiceModal('web-dev')} />
+            <WebDevShowcase  />
           </div>
         </section>
 
@@ -283,7 +283,7 @@ export default function App() {
         >
           {/* Left Column: Rectangle 92 Showcase */}
           <div ref={appCardRef} className="lg:col-span-5 order-2 lg:order-1 flex justify-center lg:justify-start">
-            <AppDevShowcase onExploreTech={() => openServiceModal('app-dev')} />
+            <AppDevShowcase />
           </div>
 
           {/* Right Column: Typography & Services */}
@@ -304,7 +304,7 @@ export default function App() {
               ].map((item, index) => (
                 <li
                   key={index}
-                  onClick={() => openServiceModal('app-dev')}
+                  
                   className="group flex items-center gap-4 cursor-pointer text-base sm:text-xl lg:text-[24px] font-sora font-normal text-black hover:text-blue-700 transition-colors py-1.5"
                 >
                   <span className="w-2.5 h-2.5 sm:w-3 sm:h-3 bg-black group-hover:bg-blue-600 transition-colors shrink-0 rounded-xs" />
@@ -318,7 +318,7 @@ export default function App() {
 
             <div className="mt-8 pt-4">
               <button
-                onClick={() => openServiceModal('app-dev')}
+                
                 className="inline-flex items-center gap-2 text-sm sm:text-base font-semibold text-blue-700 hover:text-blue-900 group cursor-pointer"
               >
                 <span>View Mobile Tech Specifications & Case Studies</span>
@@ -361,7 +361,7 @@ export default function App() {
               ].map((item, index) => (
                 <li
                   key={index}
-                  onClick={() => openServiceModal('ai-intelligence')}
+                  
                   className="group flex items-center gap-4 cursor-pointer text-base sm:text-xl lg:text-[24px] font-sora font-normal text-black hover:text-blue-700 transition-colors py-1.5"
                 >
                   <span className="w-2.5 h-2.5 sm:w-3 sm:h-3 bg-black group-hover:bg-blue-600 transition-colors shrink-0 rounded-xs" />
@@ -375,7 +375,6 @@ export default function App() {
 
             <div className="mt-8 pt-4">
               <button
-                onClick={() => openServiceModal('ai-intelligence')}
                 className="inline-flex items-center gap-2 text-sm sm:text-base font-semibold text-blue-700 hover:text-blue-900 group cursor-pointer"
               >
                 <span>Explore AI Autonomous Pipeline Architecture</span>
@@ -386,7 +385,7 @@ export default function App() {
 
           {/* Right Column: Rectangle 93 Showcase */}
           <div ref={aiCardRef} className="lg:col-span-5 flex justify-center lg:justify-end">
-            <AiShowcase onExploreTech={() => openServiceModal('ai-intelligence')} />
+            <AiShowcase  />
           </div>
         </section>
 
