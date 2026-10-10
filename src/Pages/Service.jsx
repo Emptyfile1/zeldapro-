@@ -14,7 +14,8 @@ import { ArrowRight, ChevronRight, Sparkles } from 'lucide-react';
 import { CtaBanner } from '../Servicesection/components/CtaBanner.jsx';
 
 gsap.registerPlugin(ScrollTrigger);
-
+const headingSize =
+  'text-[length:clamp(2rem,11vw,6rem)] lg:text-[length:clamp(3rem,6.4vw,6rem)] break-words';
 export default function App() {
   const [selectedService, setSelectedService] = useState(null);
   const [contactOpen, setContactOpen] = useState(false);
@@ -223,7 +224,7 @@ export default function App() {
           <div className="lg:col-span-7 flex flex-col justify-center">
             <h2
               ref={webTitleRef}
-              className="font-sora font-semibold text-5xl sm:text-7xl lg:text-[96px] tracking-tight text-gradient-blue leading-[1.08] mb-4 text-balance"
+              className={`${headingSize} font-sora font-semibold tracking-tight text-gradient-blue leading-[1.08] mb-4 text-balance`}
             >
               Web development
             </h2>
@@ -290,7 +291,7 @@ export default function App() {
           <div className="lg:col-span-7 order-1 lg:order-2 flex flex-col justify-center lg:pl-8">
             <h2
               ref={appTitleRef}
-              className="font-sora font-semibold text-5xl sm:text-7xl lg:text-[96px] tracking-tight text-gradient-blue leading-[1.08] mb-6 sm:mb-8 text-balance"
+              className={`${headingSize} font-sora font-semibold tracking-tight text-gradient-blue leading-[1.08] mb-6 sm:mb-8 text-balance`}
             >
               App development
             </h2>
@@ -340,7 +341,7 @@ export default function App() {
           <div className="lg:col-span-7 flex flex-col justify-center">
             <h2
               ref={aiTitleRef}
-              className="font-sora font-semibold text-5xl sm:text-7xl lg:text-[96px] tracking-tight text-gradient-blue leading-[1.08] mb-4 text-balance"
+              className={`${headingSize} font-sora font-semibold tracking-tight text-gradient-blue leading-[1.08] mb-4 text-balance`}
             >
               Artificial Intelligence
             </h2>

@@ -2,7 +2,7 @@ import React, { useRef } from 'react';
 import gsap from 'gsap';
 import { useGSAP } from '@gsap/react';
 import { useNavigate } from 'react-router-dom';
-import { Polyhedron } from './Polyhedron';
+import { Polyhedron } from './Polyhedron.jsx';
 
 export const Hero = () => {
   const navigate = useNavigate();

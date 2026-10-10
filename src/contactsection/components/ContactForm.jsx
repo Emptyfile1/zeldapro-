@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import confetti from 'canvas-confetti';
-import { CheckCircle2, Copy, Loader2, Sparkles, RefreshCw } from 'lucide-react';
+import { CheckCircle2, Loader2, Sparkles, RefreshCw } from 'lucide-react';
 
 export const ContactForm = () => {
   const [fullName, setFullName] = useState('');
@@ -9,9 +9,8 @@ export const ContactForm = () => {
   const [message, setMessage] = useState('');
 
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [submissionSuccess, setSubmissionSuccess] = useState(null);
+  const [submitted, setSubmitted] = useState(false);
   const [errors, setErrors] = useState({});
-  const [copiedToken, setCopiedToken] = useState(false);
 
   const validate = () => {
     const newErrors = {};
@@ -42,28 +41,13 @@ export const ContactForm = () => {
 
     setIsSubmitting(true);
 
-    // Simulate cryptographic transmission handshake
+    // TODO: replace this timeout with a real request (Formspree, EmailJS, your own API).
+    // Right now nothing is actually sent anywhere.
     setTimeout(() => {
       setIsSubmitting(false);
+      setSubmitted(true);
 
-      const transmissionId =
-        'TX-' +
-        Math.random().toString(36).substring(2, 9).toUpperCase() +
-        '-' +
-        Date.now().toString(36).toUpperCase();
-
-      const newSubmission = {
-        fullName: fullName.trim(),
-        email: email.trim(),
-        discipline,
-        message: message.trim(),
-        transmissionId,
-        timestamp: new Date().toUTCString(),
-      };
-
-      setSubmissionSuccess(newSubmission);
-
-      // Trigger celebratory particle confetti
+      // Celebratory particle confetti
       try {
         confetti({
           particleCount: 70,
@@ -78,28 +62,21 @@ export const ContactForm = () => {
   };
 
   const handleReset = () => {
-    setSubmissionSuccess(null);
+    setSubmitted(false);
     setFullName('');
     setEmail('');
     setMessage('');
     setErrors({});
   };
 
-  const handleCopyId = () => {
-    if (!submissionSuccess) return;
-    navigator.clipboard.writeText(submissionSuccess.transmissionId);
-    setCopiedToken(true);
-    setTimeout(() => setCopiedToken(false), 2000);
-  };
-
   return (
     <div className="w-full flex flex-col items-center lg:items-start select-none pt-16 sm:pt-24 lg:pt-32">
       {/* Figma: "Get in Touch" Gradient Title */}
-<h1 className="font-sora font-semibold text-5xl sm:text-7xl lg:text-8xl xl:text-[92px] 2xl:text-[96px] tracking-tight leading-[1.08] mb-6 sm:mb-8 text-center lg:text-left whitespace-nowrap">
-  <span className="bg-gradient-to-r from-[#1D4ED8] via-[#2563EB] to-[#34D399] bg-clip-text text-transparent filter drop-shadow-[0_4px_24px_rgba(29,78,216,0.45)] inline-block">
-    Get in Touch
-  </span>
-</h1>
+      <h1 className="font-sora font-semibold text-5xl sm:text-7xl lg:text-8xl xl:text-[92px] 2xl:text-[96px] tracking-tight leading-[1.08] mb-6 sm:mb-8 text-center lg:text-left whitespace-nowrap">
+        <span className="bg-gradient-to-r from-[#1D4ED8] via-[#2563EB] to-[#34D399] bg-clip-text text-transparent filter drop-shadow-[0_4px_24px_rgba(29,78,216,0.45)] inline-block">
+          Get in Touch
+        </span>
+      </h1>
 
       {/* Figma: Group 35 & Rectangle 94 Container */}
       <div className="w-full max-w-[760px] 2xl:max-w-[815px] p-6 sm:p-10 lg:p-12 rounded-[24px] bg-[#E2E8F0]/[0.12] backdrop-blur-[24px] border border-white/[0.16] shadow-[0_20px_60px_rgba(0,0,0,0.6)] relative overflow-hidden transition-all duration-300">
@@ -107,69 +84,26 @@ export const ContactForm = () => {
         <div className="absolute top-0 right-0 w-80 h-80 bg-blue-600/10 rounded-full blur-3xl pointer-events-none -mr-20 -mt-20" />
         <div className="absolute bottom-0 left-0 w-80 h-80 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none -ml-20 -mb-20" />
 
-        {submissionSuccess ? (
-          /* Confirmation Receipt State */
-          <div className="py-6 flex flex-col items-center text-center animate-in fade-in zoom-in-95 duration-300">
+        {submitted ? (
+          /* Simple confirmation state */
+          <div className="py-10 sm:py-16 flex flex-col items-center text-center animate-in fade-in zoom-in-95 duration-300 relative z-10">
             <div className="w-16 h-16 rounded-2xl bg-emerald-500/20 border border-emerald-400/40 flex items-center justify-center text-emerald-400 mb-6 shadow-[0_0_25px_rgba(52,211,153,0.3)]">
               <CheckCircle2 size={36} />
             </div>
 
             <h3 className="font-sora text-2xl sm:text-3xl font-semibold text-white mb-2">
-              Transmission Dispatched
+              Message Delivered
             </h3>
             <p className="text-slate-300 text-sm sm:text-base max-w-md mb-8">
-              Your message has been securely relayed to the ZeldaPro Engineering Bureau. A research officer will review your dossier promptly.
+              Thanks for reaching out. We&apos;ll get back to you soon.
             </p>
-
-            {/* Cryptographic Transmission Dossier Card */}
-            <div className="w-full p-5 rounded-xl bg-black/40 border border-white/15 text-left font-mono-code text-xs mb-8 space-y-3">
-              <div className="flex items-center justify-between pb-3 border-b border-white/10">
-                <span className="text-slate-400">TRANSMISSION ID</span>
-                <button
-                  onClick={handleCopyId}
-                  className="flex items-center gap-1.5 text-cyan-400 hover:text-cyan-300 font-semibold cursor-pointer"
-                  title="Copy Transmission ID"
-                >
-                  <span>{submissionSuccess.transmissionId}</span>
-                  <Copy size={13} />
-                </button>
-              </div>
-
-              <div className="flex items-center justify-between text-slate-300">
-                <span className="text-slate-400">RECIPIENT:</span>
-                <span>connect@zeldapro.ai</span>
-              </div>
-
-              <div className="flex items-center justify-between text-slate-300">
-                <span className="text-slate-400">RESEARCH DISCIPLINE:</span>
-                <span className="text-emerald-400">{submissionSuccess.discipline}</span>
-              </div>
-
-              <div className="flex items-center justify-between text-slate-300">
-                <span className="text-slate-400">TIMESTAMP:</span>
-                <span className="text-slate-300">{submissionSuccess.timestamp}</span>
-              </div>
-
-              <div className="pt-2 border-t border-white/10 text-slate-400">
-                <span className="text-slate-500 block mb-1">ENCRYPTED DIGEST:</span>
-                <span className="text-slate-300 line-clamp-2 italic font-sans text-sm">
-                  "{submissionSuccess.message}"
-                </span>
-              </div>
-            </div>
-
-            {copiedToken && (
-              <div className="mb-4 text-xs font-mono-code text-emerald-400">
-                ✓ Transmission Token copied to clipboard
-              </div>
-            )}
 
             <button
               onClick={handleReset}
               className="px-6 py-3.5 rounded-xl bg-white/10 hover:bg-white/15 border border-white/20 text-white font-manrope font-semibold text-sm flex items-center gap-2 cursor-pointer transition-colors"
             >
               <RefreshCw size={16} />
-              <span>Submit Another Transmission</span>
+              <span>Send Another Message</span>
             </button>
           </div>
         ) : (
@@ -285,7 +219,7 @@ export const ContactForm = () => {
                 <>
                   <Loader2 className="animate-spin text-white" size={24} />
                   <span className="font-manrope font-semibold text-2xl text-white drop-shadow-[0_4px_4px_rgba(0,0,0,0.25)]">
-                    Transmitting...
+                    Sending...
                   </span>
                 </>
               ) : (

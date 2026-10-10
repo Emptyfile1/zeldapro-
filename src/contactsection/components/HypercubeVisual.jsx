@@ -1,10 +1,12 @@
 import React, { useEffect, useRef, useState } from 'react';
 
+// Kept the original export name so existing imports don't break.
+// `PolyhedronVisual` is an alias if you'd rather rename it at the call site.
 export const HypercubeVisual = () => {
   const canvasRef = useRef(null);
   const [isHovered, setIsHovered] = useState(false);
-  const mouseRef = useRef({ x: 0, y: 0, targetX: 0, targetY: 0, isDown: false, startX: 0, startY: 0 });
-  const rotRef = useRef({ x: 0.35, y: -0.55, z: 0.15 });
+  const mouseRef = useRef({ isDown: false, startX: 0, startY: 0 });
+  const rotRef = useRef({ x: 0.35, y: -0.55 });
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -39,23 +41,26 @@ export const HypercubeVisual = () => {
       vx: (Math.random() - 0.5) * 0.3,
       vy: (Math.random() - 0.5) * 0.3,
       size: 0.8 + Math.random() * 2,
-      alpha: Math.random() * 0.7,
       baseAlpha: 0.2 + Math.random() * 0.5,
     }));
 
-    // Hypercube 4D/3D vertices
-    const outerVertices = [
-      { x: -1, y: -1, z: -1 },
-      { x: 1, y: -1, z: -1 },
-      { x: 1, y: 1, z: -1 },
-      { x: -1, y: 1, z: -1 },
-      { x: -1, y: -1, z: 1 },
-      { x: 1, y: -1, z: 1 },
-      { x: 1, y: 1, z: 1 },
-      { x: -1, y: 1, z: 1 },
-    ];
+    // ---- Icosahedron geometry (12 vertices, 30 edges) ----
+    const phi = (1 + Math.sqrt(5)) / 2;
+    const RADIUS = 1.45; // tuned so it reads about as large as the old cube
+    const raw = [];
+    [-1, 1].forEach((a) =>
+      [-1, 1].forEach((b) => {
+        raw.push([0, a, b * phi]);
+        raw.push([a, b * phi, 0]);
+        raw.push([b * phi, 0, a]);
+      })
+    );
+    const outerVertices = raw.map(([x, y, z]) => {
+      const len = Math.hypot(x, y, z);
+      return { x: (x / len) * RADIUS, y: (y / len) * RADIUS, z: (z / len) * RADIUS };
+    });
 
-    // Inner cube (scaled)
+    // Inner polyhedron (scaled copy, same vertex order so spokes map 1:1)
     const innerScale = 0.52;
     const innerVertices = outerVertices.map((v) => ({
       x: v.x * innerScale,
@@ -63,19 +68,26 @@ export const HypercubeVisual = () => {
       z: v.z * innerScale,
     }));
 
-    // Edges
-    const cubeEdges = [
-      [0, 1], [1, 2], [2, 3], [3, 0], // back square
-      [4, 5], [5, 6], [6, 7], [7, 4], // front square
-      [0, 4], [1, 5], [2, 6], [3, 7], // cross links
-    ];
+    // Edges = every vertex pair at the minimum distance
+    const dist = (a, b) => Math.hypot(a.x - b.x, a.y - b.y, a.z - b.z);
+    let minD = Infinity;
+    for (let i = 0; i < outerVertices.length; i++) {
+      for (let j = i + 1; j < outerVertices.length; j++) {
+        minD = Math.min(minD, dist(outerVertices[i], outerVertices[j]));
+      }
+    }
+    const polyEdges = [];
+    for (let i = 0; i < outerVertices.length; i++) {
+      for (let j = i + 1; j < outerVertices.length; j++) {
+        if (dist(outerVertices[i], outerVertices[j]) < minD * 1.05) polyEdges.push([i, j]);
+      }
+    }
 
     let time = 0;
 
     const render = () => {
       time += 0.015;
 
-      // Smooth rotation with mouse influence
       if (!mouseRef.current.isDown) {
         rotRef.current.y += 0.004;
         rotRef.current.x = 0.3 + Math.sin(time * 0.5) * 0.08;
@@ -83,27 +95,25 @@ export const HypercubeVisual = () => {
 
       ctx.clearRect(0, 0, width, height);
 
-      // Center for 3D projection
       const cx = width * 0.32;
       const cy = height * 0.44;
       const scale = Math.min(width, height) * 0.22;
 
-      // Rotation matrix calculations
       const cosX = Math.cos(rotRef.current.x);
       const sinX = Math.sin(rotRef.current.x);
       const cosY = Math.cos(rotRef.current.y);
       const sinY = Math.sin(rotRef.current.y);
 
-      const project = (p, offsetY = 0) => {
+      const project = (p) => {
         // Rotate around Y
-        let x1 = p.x * cosY + p.z * sinY;
-        let z1 = -p.x * sinY + p.z * cosY;
-        let y1 = p.y;
+        const x1 = p.x * cosY + p.z * sinY;
+        const z1 = -p.x * sinY + p.z * cosY;
+        const y1 = p.y;
 
         // Rotate around X
-        let y2 = y1 * cosX - z1 * sinX;
-        let z2 = y1 * sinX + z1 * cosX;
-        let x2 = x1;
+        const y2 = y1 * cosX - z1 * sinX;
+        const z2 = y1 * sinX + z1 * cosX;
+        const x2 = x1;
 
         // Perspective
         const fov = 3.8;
@@ -111,12 +121,12 @@ export const HypercubeVisual = () => {
 
         return {
           x: cx + x2 * scale * pScale,
-          y: cy + (y2 * scale + offsetY) * pScale,
+          y: cy + y2 * scale * pScale,
           z: z2,
         };
       };
 
-      // 1. Draw Background Ambient Glow behind hypercube
+      // 1. Background ambient glow
       const bgGlow = ctx.createRadialGradient(cx, cy, 20, cx, cy, scale * 2.8);
       bgGlow.addColorStop(0, 'rgba(124, 58, 237, 0.22)');
       bgGlow.addColorStop(0.35, 'rgba(37, 99, 235, 0.14)');
@@ -125,7 +135,7 @@ export const HypercubeVisual = () => {
       ctx.fillStyle = bgGlow;
       ctx.fillRect(0, 0, width, height);
 
-      // 2. Draw Ambient Dust
+      // 2. Ambient dust
       dustList.forEach((d) => {
         d.x += d.vx;
         d.y += d.vy;
@@ -141,24 +151,23 @@ export const HypercubeVisual = () => {
       });
 
       // Project vertices
-      const projOuter = outerVertices.map((v) => project(v));
-      const projInner = innerVertices.map((v) => project(v));
+      const projOuter = outerVertices.map(project);
+      const projInner = innerVertices.map(project);
 
-      // Right-most anchor point on cube from which fiber optics emanate
+      // Right-most anchor point from which fiber optics emanate
       let maxAnchor = projOuter[0];
       [...projOuter, ...projInner].forEach((p) => {
         if (p.x > maxAnchor.x) maxAnchor = p;
       });
 
-      // Target 1: IoT Beacon Antenna (Upper Right)
+      // Target 1: IoT beacon (upper right)
       const beaconX = width * 0.72;
       const beaconY = height * 0.26;
 
-      // Target 2: Connected Autonomous Vehicle Outline (Lower Right)
+      // Target 2: autonomous vehicle (lower right)
       const carX = width * 0.74;
       const carY = height * 0.62;
 
-      // Draw Fiber-Optic Tendril Cables (Curved Bezier Paths)
       const cables = [
         {
           start: { x: maxAnchor.x, y: maxAnchor.y },
@@ -197,7 +206,6 @@ export const HypercubeVisual = () => {
         },
       ];
 
-      // Draw glowing lines for cables
       cables.forEach((c) => {
         // Outer soft glow
         ctx.strokeStyle = c.color;
@@ -218,13 +226,12 @@ export const HypercubeVisual = () => {
         ctx.stroke();
       });
 
-      // Render flowing photons along cables
+      // Photons along cables
       particles.forEach((p) => {
         p.t += p.speed;
         if (p.t > 1) p.t = 0;
         const c = cables[p.cableIndex % cables.length];
 
-        // Cubic bezier interpolation
         const u = 1 - p.t;
         const tt = p.t * p.t;
         const uu = u * u;
@@ -240,7 +247,6 @@ export const HypercubeVisual = () => {
         ctx.arc(px, py, p.size, 0, Math.PI * 2);
         ctx.fill();
 
-        // Photon glow halo
         ctx.fillStyle = '#FFFFFF';
         ctx.beginPath();
         ctx.arc(px, py, p.size * 0.4, 0, Math.PI * 2);
@@ -248,26 +254,23 @@ export const HypercubeVisual = () => {
       });
       ctx.globalAlpha = 1.0;
 
-      // 3. Draw IoT Beacon Tower with wireless pulse waves
+      // 3. IoT beacon tower with wireless pulse waves
       ctx.save();
       ctx.translate(beaconX, beaconY);
       ctx.strokeStyle = 'rgba(148, 163, 184, 0.7)';
       ctx.lineWidth = 1.8;
       ctx.fillStyle = 'rgba(30, 41, 59, 0.6)';
 
-      // Tower body
       ctx.beginPath();
       ctx.roundRect(-8, 0, 16, 45, [4, 4, 1, 1]);
       ctx.fill();
       ctx.stroke();
 
-      // Top antenna tip
       ctx.beginPath();
       ctx.arc(0, -6, 4, 0, Math.PI * 2);
       ctx.fillStyle = '#38BDF8';
       ctx.fill();
 
-      // Concentric wireless signal waves emitting upward
       for (let i = 1; i <= 3; i++) {
         const waveProgress = (time * 1.5 + i * 0.7) % 3;
         const waveRadius = 12 + waveProgress * 14;
@@ -281,32 +284,30 @@ export const HypercubeVisual = () => {
       }
       ctx.restore();
 
-      // 4. Draw Connected Autonomous Vehicle Hologram Outline
+      // 4. Connected autonomous vehicle hologram
       ctx.save();
       ctx.translate(carX, carY);
       ctx.strokeStyle = 'rgba(148, 163, 184, 0.75)';
       ctx.lineWidth = 1.8;
       ctx.fillStyle = 'rgba(15, 23, 42, 0.6)';
 
-      // Futuristic car profile path
       ctx.beginPath();
-      ctx.moveTo(-50, 20); // rear bumper
-      ctx.lineTo(-45, 8); // rear trunk
-      ctx.lineTo(-30, 0); // rear windshield
-      ctx.lineTo(-10, -12); // roof
-      ctx.lineTo(20, -12); // roof top
-      ctx.lineTo(40, 6); // hood
-      ctx.lineTo(54, 12); // nose
-      ctx.lineTo(54, 20); // front bumper
-      ctx.lineTo(42, 20); // front wheel arch start
-      ctx.arc(32, 20, 10, 0, Math.PI, true); // front wheel arch
-      ctx.lineTo(-22, 20); // chassis line
-      ctx.arc(-32, 20, 10, 0, Math.PI, true); // rear wheel arch
+      ctx.moveTo(-50, 20);
+      ctx.lineTo(-45, 8);
+      ctx.lineTo(-30, 0);
+      ctx.lineTo(-10, -12);
+      ctx.lineTo(20, -12);
+      ctx.lineTo(40, 6);
+      ctx.lineTo(54, 12);
+      ctx.lineTo(54, 20);
+      ctx.lineTo(42, 20);
+      ctx.arc(32, 20, 10, 0, Math.PI, true);
+      ctx.lineTo(-22, 20);
+      ctx.arc(-32, 20, 10, 0, Math.PI, true);
       ctx.closePath();
       ctx.fill();
       ctx.stroke();
 
-      // Wheels with neon cyan hub glow
       const drawWheel = (wx, wy) => {
         ctx.fillStyle = '#0F172A';
         ctx.beginPath();
@@ -324,13 +325,11 @@ export const HypercubeVisual = () => {
       drawWheel(32, 20);
       drawWheel(-32, 20);
 
-      // Car LiDAR roof sensor with pulsed radar arc
       ctx.fillStyle = '#34D399';
       ctx.beginPath();
       ctx.arc(5, -15, 3, 0, Math.PI * 2);
       ctx.fill();
 
-      // Forward sensor beam
       const beamAlpha = 0.25 + 0.15 * Math.sin(time * 4);
       const beamGrad = ctx.createLinearGradient(54, 15, 110, 15);
       beamGrad.addColorStop(0, `rgba(56, 189, 248, ${beamAlpha})`);
@@ -345,11 +344,11 @@ export const HypercubeVisual = () => {
       ctx.fill();
       ctx.restore();
 
-      // 5. Draw the 3D Hypercube (Tesseract) Lattice
-      const drawEdges = (pArr1, color, alpha, widthVal) => {
-        cubeEdges.forEach(([i, j]) => {
-          const a = pArr1[i];
-          const b = pArr1[j];
+      // 5. Polyhedron lattice
+      const drawEdges = (pArr, color, alpha, widthVal) => {
+        polyEdges.forEach(([i, j]) => {
+          const a = pArr[i];
+          const b = pArr[j];
 
           // Outer bloom
           ctx.strokeStyle = color;
@@ -371,8 +370,8 @@ export const HypercubeVisual = () => {
         });
       };
 
-      // Connecting Edges between Inner and Outer Cube
-      for (let i = 0; i < 8; i++) {
+      // Spokes between inner and outer polyhedron
+      for (let i = 0; i < outerVertices.length; i++) {
         const outP = projOuter[i];
         const inP = projInner[i];
 
@@ -393,17 +392,14 @@ export const HypercubeVisual = () => {
         ctx.stroke();
       }
 
-      // Outer cube struts (Electric Cyan & Neon Violet)
-      drawEdges(projOuter, '#06B6D4', 0.85, 2.2);
+      // Outer struts (cyan) and inner struts (magenta)
+      drawEdges(projOuter, '#06B6D4', 0.85, 2.0);
+      drawEdges(projInner, '#EC4899', 0.9, 1.6);
 
-      // Inner cube struts (Hot Pink / Magenta)
-      drawEdges(projInner, '#EC4899', 0.9, 1.8);
-
-      // 6. Draw Frosted Glass Crystal Cubes at Vertices
+      // 6. Glass nodes at vertices
       const drawGlassNode = (p, baseSize, color) => {
         const nodeSize = baseSize * (1 + p.z * 0.2);
 
-        // Ambient radial flare
         const flare = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, nodeSize * 2.6);
         flare.addColorStop(0, color);
         flare.addColorStop(0.4, 'rgba(255, 255, 255, 0.4)');
@@ -413,7 +409,6 @@ export const HypercubeVisual = () => {
         ctx.arc(p.x, p.y, nodeSize * 2.6, 0, Math.PI * 2);
         ctx.fill();
 
-        // Frosted Crystal Box representation
         ctx.fillStyle = 'rgba(255, 255, 255, 0.85)';
         ctx.beginPath();
         ctx.roundRect(p.x - nodeSize / 2, p.y - nodeSize / 2, nodeSize, nodeSize, 3);
@@ -423,22 +418,23 @@ export const HypercubeVisual = () => {
         ctx.lineWidth = 1.2;
         ctx.stroke();
 
-        // Inner core point
         ctx.fillStyle = color;
         ctx.beginPath();
         ctx.arc(p.x, p.y, nodeSize * 0.25, 0, Math.PI * 2);
         ctx.fill();
       };
 
-      // Render inner nodes
-      projInner.forEach((p) => drawGlassNode(p, 10, 'rgba(236, 72, 153, 0.9)'));
-      // Render outer nodes
-      projOuter.forEach((p) => drawGlassNode(p, 15, 'rgba(56, 189, 248, 0.95)'));
+      // Slightly smaller nodes than the cube had, since there are 12 per shell instead of 8
+      projInner.forEach((p) => drawGlassNode(p, 8, 'rgba(236, 72, 153, 0.9)'));
+      projOuter.forEach((p) => drawGlassNode(p, 12, 'rgba(56, 189, 248, 0.95)'));
 
-      // Center Singularity Core Flare
+      // Center singularity core
       const centerNode = project({ x: 0, y: 0, z: 0 });
       const corePulse = 18 + Math.sin(time * 3) * 6;
-      const coreGrad = ctx.createRadialGradient(centerNode.x, centerNode.y, 0, centerNode.x, centerNode.y, corePulse * 3);
+      const coreGrad = ctx.createRadialGradient(
+        centerNode.x, centerNode.y, 0,
+        centerNode.x, centerNode.y, corePulse * 3
+      );
       coreGrad.addColorStop(0, '#FFFFFF');
       coreGrad.addColorStop(0.2, '#C084FC');
       coreGrad.addColorStop(0.5, 'rgba(59, 130, 246, 0.3)');
@@ -448,19 +444,11 @@ export const HypercubeVisual = () => {
       ctx.arc(centerNode.x, centerNode.y, corePulse * 3, 0, Math.PI * 2);
       ctx.fill();
 
-      // 7. Dark Wet Mirror Floor Reflection
+      // 7. Floor reflection
       const floorY = height * 0.76;
-      const reflGradient = ctx.createLinearGradient(0, floorY, 0, height);
-      reflGradient.addColorStop(0, 'rgba(0, 0, 0, 0.2)');
-      reflGradient.addColorStop(0.3, 'rgba(15, 23, 42, 0.7)');
-      reflGradient.addColorStop(1, 'rgba(0, 0, 0, 0.95)');
-
-      // Mirrored reflection of the lower vertices on floor
       ctx.save();
       ctx.globalAlpha = 0.22;
       ctx.filter = 'blur(4px)';
-
-      // Draw mirrored outer nodes below floor
       projOuter.forEach((p) => {
         if (p.y > cy) {
           const distFromFloor = p.y - floorY;
@@ -476,7 +464,7 @@ export const HypercubeVisual = () => {
       });
       ctx.restore();
 
-      // Floor horizontal shimmer line
+      // Floor shimmer line
       ctx.strokeStyle = 'rgba(229, 224, 216, 0.15)';
       ctx.lineWidth = 1;
       ctx.beginPath();
@@ -495,38 +483,44 @@ export const HypercubeVisual = () => {
     };
   }, []);
 
-  // Mouse drag to rotate
-  const handleMouseDown = (e) => {
+  // Pointer events cover mouse, touch and pen
+  const handlePointerDown = (e) => {
     mouseRef.current.isDown = true;
     mouseRef.current.startX = e.clientX;
     mouseRef.current.startY = e.clientY;
+    e.currentTarget.setPointerCapture?.(e.pointerId);
   };
 
-  const handleMouseMove = (e) => {
+  const handlePointerMove = (e) => {
     if (!mouseRef.current.isDown) return;
     const dx = e.clientX - mouseRef.current.startX;
     const dy = e.clientY - mouseRef.current.startY;
     rotRef.current.y += dx * 0.008;
-    rotRef.current.x += dy * 0.008;
+    // Vertical tilt only for mouse/pen; on touch, vertical movement belongs to page scroll
+    if (e.pointerType !== 'touch') rotRef.current.x += dy * 0.008;
     mouseRef.current.startX = e.clientX;
     mouseRef.current.startY = e.clientY;
   };
 
-  const handleMouseUp = () => {
+  const handlePointerUp = (e) => {
     mouseRef.current.isDown = false;
+    if (e?.currentTarget?.hasPointerCapture?.(e.pointerId)) {
+      e.currentTarget.releasePointerCapture(e.pointerId);
+    }
   };
 
   return (
     <div
-      className="relative w-full h-full min-h-[500px] lg:min-h-[750px] overflow-hidden select-none cursor-grab active:cursor-grabbing"
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => {
+      className="relative w-full h-full min-h-[500px] lg:min-h-[750px] overflow-hidden select-none cursor-grab active:cursor-grabbing touch-pan-y"
+      onPointerEnter={() => setIsHovered(true)}
+      onPointerLeave={(e) => {
         setIsHovered(false);
-        handleMouseUp();
+        handlePointerUp(e);
       }}
-      onMouseDown={handleMouseDown}
-      onMouseMove={handleMouseMove}
-      onMouseUp={handleMouseUp}
+      onPointerDown={handlePointerDown}
+      onPointerMove={handlePointerMove}
+      onPointerUp={handlePointerUp}
+      onPointerCancel={handlePointerUp}
     >
       <canvas ref={canvasRef} className="absolute inset-0 w-full h-full pointer-events-none" />
 
@@ -544,3 +538,6 @@ export const HypercubeVisual = () => {
     </div>
   );
 };
+
+export const PolyhedronVisual = HypercubeVisual;
+export default HypercubeVisual;

@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
-import {Navbar } from '../Components/Nav.jsx';
-import { HypercubeVisual } from '../contactsection/components/HypercubeVisual.jsx';
+import { Navbar } from '../Components/Nav.jsx';
 import { ContactForm } from '../contactsection/components/ContactForm.jsx';
 import { Footer } from '../Components/Footer.jsx';
 import { NavModals } from '../contactsection/components/NavModals.jsx';
+import { Polyhedron } from '../contactsection/components/Polyhedron.jsx';
 
 export default function Contact() {
   const [activeTab, setActiveTab] = useState('Contact');
@@ -46,14 +46,18 @@ export default function Contact() {
       <div className="fixed inset-0 pointer-events-none opacity-20 bg-[radial-gradient(#ffffff_1px,transparent_1px)] [background-size:32px_32px] z-0" />
 
       {/* Top Header Navigation */}
-      
+      {/* <Navbar activeTab={activeTab} onSelectTab={handleSelectTab} /> */}
 
       {/* Main Content Area */}
-      <main className="relative z-10 flex-1 w-full max-w-[1725px] mx-auto px-4 sm:px-8 lg:px-12 pt-4 sm:pt-8 pb-16 lg:pb-24">
-        <div id="contact-section" className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center min-h-[calc(100vh-140px)]">
-          {/* Left Column: 3D Luminous Hypercube Lattice with Connected IoT and Autonomous Vehicle */}
-          <div className="lg:col-span-6 xl:col-span-6 w-full h-full min-h-[480px] sm:min-h-[580px] lg:min-h-[780px] flex items-center justify-center relative">
-            <HypercubeVisual />
+      <main className="relative z-10 flex-1 w-full max-w-[1725px] mx-auto px-4 sm:px-8 lg:px-12 pt-2 sm:pt-4 lg:pt-6 pb-16 lg:pb-24">
+        <div
+          id="contact-section"
+          className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-start"
+        >
+          {/* Left Column: 3D polyhedron. The wrapper is `relative` with a min-height,
+              and the polyhedron fills it via `absolute inset-0` so its canvas gets a real size. */}
+          <div className="lg:col-span-6 xl:col-span-6 w-full h-full min-h-[480px] sm:min-h-[580px] lg:min-h-[780px] relative">
+            <Polyhedron className="absolute inset-0" />
           </div>
 
           {/* Right Column: "Get in Touch" + Glassmorphic Contact Card */}
