@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
@@ -6,10 +6,28 @@ import { useGSAP } from '@gsap/react';
 
 gsap.registerPlugin(ScrollTrigger);
 
+// Tracks the Tailwind `sm` breakpoint (640px). Framer Motion's animate values
+// are JS, not CSS, so the stack offsets need to know the breakpoint in JS.
+const useIsMobile = (query = '(max-width: 639px)') => {
+  const [isMobile, setIsMobile] = useState(() =>
+    typeof window !== 'undefined' ? window.matchMedia(query).matches : false
+  );
+
+  useEffect(() => {
+    const mql = window.matchMedia(query);
+    const onChange = (e) => setIsMobile(e.matches);
+    setIsMobile(mql.matches);
+    mql.addEventListener('change', onChange);
+    return () => mql.removeEventListener('change', onChange);
+  }, [query]);
+
+  return isMobile;
+};
+
 // Skeuomorphic Industrial Phillips Screw Rivet Component
 const ScrewRivet = ({ className = '' }) => (
   <div
-    className={`absolute w-[14px] h-[14px] rounded-full pointer-events-none flex items-center justify-center z-10 ${className}`}
+    className={`absolute w-[12px] h-[12px] sm:w-[14px] sm:h-[14px] rounded-full pointer-events-none flex items-center justify-center z-10 ${className}`}
     style={{
       background: '#D9DFEB',
       border: '1px solid #C8CFDF',
@@ -19,17 +37,17 @@ const ScrewRivet = ({ className = '' }) => (
     }}
   >
     <div
-      className="absolute w-[8px] h-[1.5px] rounded-[0.5px] rotate-45 pointer-events-none"
+      className="absolute w-[7px] sm:w-[8px] h-[1.5px] rounded-[0.5px] rotate-45 pointer-events-none"
       style={{ backgroundColor: '#94A3B8' }}
     />
     <div
-      className="absolute w-[8px] h-[1.5px] rounded-[0.5px] -rotate-45 pointer-events-none"
+      className="absolute w-[7px] sm:w-[8px] h-[1.5px] rounded-[0.5px] -rotate-45 pointer-events-none"
       style={{ backgroundColor: '#94A3B8' }}
     />
   </div>
 );
 
-// 5 Stars SVG Group (ant-design:star-filled matching Figma spec)
+// 5 Stars SVG Group
 const StarRating = ({ count = 5 }) => (
   <div className="flex items-center gap-[2px]">
     {[...Array(count)].map((_, i) => (
@@ -40,7 +58,7 @@ const StarRating = ({ count = 5 }) => (
         viewBox="0 0 16 16"
         fill="#000000"
         xmlns="http://www.w3.org/2000/svg"
-        className="w-4 h-4"
+        className="w-3.5 h-3.5 sm:w-4 sm:h-4"
       >
         <path d="M8 1.5L9.955 5.564L14.44 6.216L11.19 9.384L11.957 13.851L8 11.77L4.043 13.851L4.81 9.384L1.56 6.216L6.045 5.564L8 1.5Z" />
       </svg>
@@ -48,18 +66,25 @@ const StarRating = ({ count = 5 }) => (
   </div>
 );
 
-// Shared Card Body with exact Figma styling
+// Shared card size. On mobile the card is capped at 300px but always leaves
+// 80px of viewport for the stacked cards peeking out behind it.
+// Heights are content-driven on mobile (small min-h) so there's no dead space.
+const CARD_SIZE_CLASSES =
+  'w-[min(300px,calc(100vw_-_80px))] sm:w-[410px] min-h-[500px] sm:min-h-[640px] ' +
+  'px-4 pt-6 pb-8 sm:px-12 sm:pt-[30px] sm:pb-12 flex flex-col items-center gap-3 sm:gap-[16px]';
+
+// Shared Card Body
 const CardContent = ({ testimonial }) => (
   <>
     {/* 4 Corner Screws */}
-    <ScrewRivet className="top-[17px] left-[17px]" />
-    <ScrewRivet className="top-[17px] right-[17px]" />
-    <ScrewRivet className="bottom-[17px] left-[17px]" />
-    <ScrewRivet className="bottom-[17px] right-[17px]" />
+    <ScrewRivet className="top-[12px] left-[12px] sm:top-[17px] sm:left-[17px]" />
+    <ScrewRivet className="top-[12px] right-[12px] sm:top-[17px] sm:right-[17px]" />
+    <ScrewRivet className="bottom-[12px] left-[12px] sm:bottom-[17px] sm:left-[17px]" />
+    <ScrewRivet className="bottom-[12px] right-[12px] sm:bottom-[17px] sm:right-[17px]" />
 
-    {/* Rectangle 71 (Image: 244px x 229px with 4px 4px 10px shadow and 24px radius) */}
+    {/* Portrait: scales down on mobile but keeps the 244:229 ratio */}
     <div
-      className="w-[244px] h-[229px] rounded-[24px] overflow-hidden flex-none shrink-0 bg-slate-200"
+      className="w-full max-w-[188px] sm:max-w-[244px] aspect-[244/229] rounded-[20px] sm:rounded-[24px] overflow-hidden flex-none shrink-0 bg-slate-200"
       style={{
         boxShadow: '4px 4px 10px rgba(0, 0, 0, 0.25)',
       }}
@@ -74,9 +99,9 @@ const CardContent = ({ testimonial }) => (
       />
     </div>
 
-    {/* Name (font-family: 'Sora', 24px/28px, color: #000000, text-shadow: 0px 4px 4px rgba(0,0,0,0.25)) */}
+    {/* Name */}
     <div
-      className="font-['Sora'] font-normal text-[24px] leading-[28px] text-black text-center flex items-center justify-center flex-none"
+      className="font-['Sora'] font-normal text-[20px] leading-[24px] sm:text-[24px] sm:leading-[28px] text-black text-center flex items-center justify-center flex-none"
       style={{
         textShadow: '0px 4px 4px rgba(0, 0, 0, 0.25)',
       }}
@@ -84,9 +109,9 @@ const CardContent = ({ testimonial }) => (
       {testimonial.name}
     </div>
 
-    {/* Group 31 & Rectangle 77: Quote Container (329px, rgba(29, 78, 216, 0.2) with border and drop-shadow) */}
+    {/* Quote container */}
     <div
-      className="relative w-full max-w-[329px] p-6 rounded-[12px] flex flex-col justify-between gap-6 flex-none text-left"
+      className="relative w-full max-w-[329px] p-4 sm:p-6 rounded-[12px] flex flex-col justify-between gap-4 sm:gap-6 flex-none text-left"
       style={{
         boxSizing: 'border-box',
         background: 'rgba(29, 78, 216, 0.2)',
@@ -95,14 +120,13 @@ const CardContent = ({ testimonial }) => (
         filter: 'drop-shadow(4px 4px 10px rgba(0, 0, 0, 0.25))',
       }}
     >
-      <p className="font-['Manrope'] font-normal text-[17px] sm:text-[19px] leading-[24px] sm:leading-[25px] tracking-[-0.5px] text-black">
+      <p className="font-['Manrope'] font-normal text-[15px] leading-[21px] sm:text-[19px] sm:leading-[25px] tracking-[-0.3px] sm:tracking-[-0.5px] text-black">
         &ldquo;{testimonial.quote}&rdquo;
       </p>
 
-      {/* Group 32: 5 Stars */}
-      <div className="flex items-center justify-between pt-1">
+      <div className="flex items-center justify-between gap-2 pt-1">
         <StarRating count={testimonial.stars} />
-        <span className="font-mono text-[10px] text-blue-950 uppercase tracking-widest font-semibold opacity-75">
+        <span className="font-mono text-[9px] sm:text-[10px] text-blue-950 uppercase tracking-widest font-semibold opacity-75 text-right">
           {testimonial.company}
         </span>
       </div>
@@ -114,8 +138,8 @@ export const TestimonialsSection = () => {
   const [activeIndex, setActiveIndex] = useState(0);
   const [direction, setDirection] = useState(1);
   const containerRef = useRef(null);
+  const isMobile = useIsMobile();
 
-  // Professional portrait stock images from Unsplash
   const testimonials = [
     {
       id: 'sarah',
@@ -226,6 +250,20 @@ export const TestimonialsSection = () => {
   const nextItem = testimonials[(activeIndex + 1) % total];
   const thirdItem = testimonials[(activeIndex + 2) % total];
 
+  // Stack offsets. Desktop values are unchanged. Mobile offsets are roughly a
+  // third of that so the back cards stay inside the viewport instead of being
+  // clipped by the section's overflow-hidden.
+  const backCard = isMobile
+    ? { x: 22, y: 20, rotate: 4, scale: 0.92, opacity: 0.85 }
+    : { x: 72, y: 28, rotate: 5.5, scale: 0.94, opacity: 0.85 };
+  const midCard = isMobile
+    ? { x: 11, y: 10, rotate: 2, scale: 0.96, opacity: 0.92 }
+    : { x: 36, y: 14, rotate: 3, scale: 0.97, opacity: 0.92 };
+
+  // Hover is meaningless on touch; skip it on mobile to avoid sticky hover states.
+  const backHover = isMobile ? undefined : { scale: 0.96, rotate: 7, x: 78 };
+  const midHover = isMobile ? undefined : { scale: 0.99, rotate: 4.5, x: 42 };
+
   const cardBaseStyle = {
     boxSizing: 'border-box',
     background: 'rgba(180, 202, 235, 0.22)',
@@ -237,73 +275,63 @@ export const TestimonialsSection = () => {
     WebkitBackdropFilter: 'blur(16px)',
   };
 
+  const swipeOffset = isMobile ? 50 : 80;
+
   return (
     <section
       ref={containerRef}
       id="work"
-      className="relative bg-gradient-to-b from-[#E7EEF9] via-[#DFEAF8] to-[#E7EEF9] text-[#0B1220] py-24 sm:py-32 text-center transition-colors overflow-hidden select-none"
+      className="relative bg-gradient-to-b from-[#E7EEF9] via-[#DFEAF8] to-[#E7EEF9] text-[#0B1220] py-16 sm:py-32 text-center transition-colors overflow-hidden select-none"
     >
       {/* Ambient background soft glow */}
-      <div className="absolute top-1/4 -left-32 w-96 h-96 bg-blue-400/20 rounded-full blur-3xl pointer-events-none" />
-      <div className="absolute bottom-1/4 -right-32 w-96 h-96 bg-indigo-400/20 rounded-full blur-3xl pointer-events-none" />
+      <div className="absolute top-1/4 -left-32 w-72 h-72 sm:w-96 sm:h-96 bg-blue-400/20 rounded-full blur-3xl pointer-events-none" />
+      <div className="absolute bottom-1/4 -right-32 w-72 h-72 sm:w-96 sm:h-96 bg-indigo-400/20 rounded-full blur-3xl pointer-events-none" />
 
       <div className="relative max-w-[1240px] mx-auto px-4 sm:px-8 z-10">
         {/* Section Heading */}
-        <h2 className="testimonials-heading font-heading font-bold text-4xl sm:text-5xl lg:text-[54px] leading-tight mb-14 sm:mb-16 tracking-tight text-[#0B1220]">
-          Hear it <span className="text-[#1D4ED8]">from</span>
+ <h2 className="testimonials-heading grad-text g-finalcta w-fit mx-auto font-heading font-bold text-[34px] sm:text-5xl lg:text-[54px] leading-tight mb-10 sm:mb-16 tracking-tight">
+          Hear it from
           <br />
-          <span className="text-[#1D4ED8]">our</span> clients
+          our clients
         </h2>
 
-        {/* Stacked Cards Interactive Container — Balanced & Clearly Visible */}
-        <div className="testimonial-stack-container relative max-w-[440px] sm:max-w-[480px] mx-auto min-h-[660px] flex items-center justify-center sm:-translate-x-8">
-          {/* Deck Layer 3: Back Card (Clearly Visible Stacked Layer) */}
+        {/* Stacked Cards Container */}
+        <div className="testimonial-stack-container relative max-w-[440px] sm:max-w-[480px] mx-auto min-h-[560px] sm:min-h-[660px] flex items-center justify-center -translate-x-3 sm:-translate-x-8">
+          {/* Deck Layer 3: Back Card */}
           <motion.div
             key={`deck-card-3-${thirdItem.id}`}
-            animate={{
-              x: 72,
-              y: 28,
-              rotate: 5.5,
-              scale: 0.94,
-              opacity: 0.85,
-            }}
-            whileHover={{ scale: 0.96, rotate: 7, x: 78 }}
+            animate={backCard}
+            whileHover={backHover}
             transition={{ type: 'spring', stiffness: 290, damping: 25 }}
             onClick={() => {
               setDirection(1);
               setActiveIndex((prev) => (prev + 2) % total);
             }}
-            className="absolute w-[330px] sm:w-[410px] min-h-[640px] p-[30px_20px_40px] sm:p-[30px_48px_48px] flex flex-col items-center gap-[16px] cursor-pointer z-10 transition-all overflow-hidden"
+            className={`absolute ${CARD_SIZE_CLASSES} cursor-pointer z-10 transition-all overflow-hidden`}
             style={cardBaseStyle}
             title="Click to bring this card to front"
           >
             <CardContent testimonial={thirdItem} />
           </motion.div>
 
-          {/* Deck Layer 2: Middle Card (Clearly Visible Stacked Layer) */}
+          {/* Deck Layer 2: Middle Card */}
           <motion.div
             key={`deck-card-2-${nextItem.id}`}
-            animate={{
-              x: 36,
-              y: 14,
-              rotate: 3,
-              scale: 0.97,
-              opacity: 0.92,
-            }}
-            whileHover={{ scale: 0.99, rotate: 4.5, x: 42 }}
+            animate={midCard}
+            whileHover={midHover}
             transition={{ type: 'spring', stiffness: 300, damping: 25 }}
             onClick={() => {
               setDirection(1);
               setActiveIndex((prev) => (prev + 1) % total);
             }}
-            className="absolute w-[330px] sm:w-[410px] min-h-[640px] p-[30px_20px_40px] sm:p-[30px_48px_48px] flex flex-col items-center gap-[16px] cursor-pointer z-20 transition-all overflow-hidden"
+            className={`absolute ${CARD_SIZE_CLASSES} cursor-pointer z-20 transition-all overflow-hidden`}
             style={cardBaseStyle}
             title="Click to bring this card to front"
           >
             <CardContent testimonial={nextItem} />
           </motion.div>
 
-          {/* Active Front Card — Draggable & Clickable to Flip */}
+          {/* Active Front Card: draggable and tappable */}
           <AnimatePresence mode="popLayout" custom={direction}>
             <motion.div
               key={`front-card-${current.id}`}
@@ -311,7 +339,7 @@ export const TestimonialsSection = () => {
               initial={{
                 opacity: 0,
                 scale: 0.94,
-                x: direction > 0 ? 80 : -80,
+                x: direction > 0 ? swipeOffset : -swipeOffset,
                 rotate: direction > 0 ? 5 : -5,
               }}
               animate={{
@@ -324,7 +352,7 @@ export const TestimonialsSection = () => {
               exit={{
                 opacity: 0,
                 scale: 0.92,
-                x: direction > 0 ? -100 : 100,
+                x: direction > 0 ? -swipeOffset - 20 : swipeOffset + 20,
                 rotate: direction > 0 ? -6 : 6,
               }}
               transition={{
@@ -344,7 +372,7 @@ export const TestimonialsSection = () => {
                 }
               }}
               onTap={handleNext}
-              className="relative w-[330px] sm:w-[410px] min-h-[640px] p-[30px_20px_40px] sm:p-[30px_48px_48px] flex flex-col items-center gap-[16px] z-30 cursor-grab active:cursor-grabbing"
+              className={`relative ${CARD_SIZE_CLASSES} z-30 cursor-grab active:cursor-grabbing`}
               style={{
                 ...cardBaseStyle,
                 boxShadow: '0px 12px 28px rgba(0, 0, 0, 0.12), 0px 4px 4px rgba(0, 0, 0, 0.25)',
@@ -355,9 +383,8 @@ export const TestimonialsSection = () => {
           </AnimatePresence>
         </div>
 
-        {/* Minimal Direct-Manipulation Indicator (No Chevrons) */}
-        <div className="mt-8 flex flex-col items-center gap-3">
-          {/* Dot Indicators */}
+        {/* Dot indicators */}
+        <div className="mt-6 sm:mt-8 flex flex-col items-center gap-3">
           <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-white/70 backdrop-blur-md border border-white/80 shadow-sm">
             {testimonials.map((_, i) => (
               <button
@@ -377,34 +404,32 @@ export const TestimonialsSection = () => {
             ))}
           </div>
 
-          <p className="font-mono text-xs text-slate-500 uppercase tracking-widest">
-            Click or drag card to flip
+          <p className="font-mono text-[11px] sm:text-xs text-slate-500 uppercase tracking-widest">
+            {isMobile ? 'Tap or swipe card to flip' : 'Click or drag card to flip'}
           </p>
         </div>
 
-        {/* Infinite Scroll of Company Names (Marquee) */}
-        <div className="trusted-by-section mt-24 pt-14 border-t border-slate-300/60 overflow-hidden">
-          <h3 className="font-heading font-bold text-2xl sm:text-3xl text-[#0B1220] mb-10 tracking-tight text-center">
+        {/* Company marquee */}
+        <div className="trusted-by-section mt-16 sm:mt-24 pt-10 sm:pt-14 border-t border-slate-300/60 overflow-hidden">
+          <h3 className="font-heading font-bold text-xl sm:text-3xl text-[#0B1220] mb-6 sm:mb-10 tracking-tight text-center">
             Trusted by modern leaders
           </h3>
 
           <div className="relative w-full overflow-hidden py-3">
-            {/* Left & Right gradient edge fades */}
-            <div className="absolute left-0 top-0 bottom-0 w-16 sm:w-28 bg-gradient-to-r from-[#E7EEF9] via-[#E7EEF9]/80 to-transparent pointer-events-none z-10" />
-            <div className="absolute right-0 top-0 bottom-0 w-16 sm:w-28 bg-gradient-to-l from-[#E7EEF9] via-[#E7EEF9]/80 to-transparent pointer-events-none z-10" />
+            <div className="absolute left-0 top-0 bottom-0 w-10 sm:w-28 bg-gradient-to-r from-[#E7EEF9] via-[#E7EEF9]/80 to-transparent pointer-events-none z-10" />
+            <div className="absolute right-0 top-0 bottom-0 w-10 sm:w-28 bg-gradient-to-l from-[#E7EEF9] via-[#E7EEF9]/80 to-transparent pointer-events-none z-10" />
 
-            {/* Infinite Marquee Track (seamless loop with duplicated list) */}
-            <div className="animate-marquee flex items-center gap-4 sm:gap-6">
+            <div className="animate-marquee flex items-center gap-3 sm:gap-6">
               {[...clientLogos, ...clientLogos].map((client, idx) => (
                 <div
                   key={`${client.name}-${idx}`}
-                  className="group relative px-6 py-3.5 rounded-2xl bg-white/70 hover:bg-white border border-white/90 shadow-[0_2px_8px_rgba(0,0,0,0.04)] hover:shadow-md backdrop-blur-md transition-all duration-300 hover:-translate-y-0.5 flex items-center gap-3 shrink-0 cursor-default"
+                  className="group relative px-4 py-2.5 sm:px-6 sm:py-3.5 rounded-2xl bg-white/70 hover:bg-white border border-white/90 shadow-[0_2px_8px_rgba(0,0,0,0.04)] hover:shadow-md backdrop-blur-md transition-all duration-300 hover:-translate-y-0.5 flex items-center gap-2 sm:gap-3 shrink-0 cursor-default"
                 >
                   <span className="w-2 h-2 rounded-full bg-blue-600/70 group-hover:scale-125 transition-transform" />
-                  <span className="font-heading font-bold text-base sm:text-lg text-slate-800 group-hover:text-blue-600 transition-colors whitespace-nowrap">
+                  <span className="font-heading font-bold text-sm sm:text-lg text-slate-800 group-hover:text-blue-600 transition-colors whitespace-nowrap">
                     {client.name}
                   </span>
-                  <span className="font-mono text-[9px] uppercase tracking-widest text-slate-500 bg-slate-100 group-hover:bg-blue-50 group-hover:text-blue-700 px-2 py-0.5 rounded-md border border-slate-200/70 group-hover:border-blue-200/70 transition-colors whitespace-nowrap">
+                  <span className="font-mono text-[8px] sm:text-[9px] uppercase tracking-widest text-slate-500 bg-slate-100 group-hover:bg-blue-50 group-hover:text-blue-700 px-1.5 sm:px-2 py-0.5 rounded-md border border-slate-200/70 group-hover:border-blue-200/70 transition-colors whitespace-nowrap">
                     {client.badge}
                   </span>
                 </div>

@@ -131,7 +131,7 @@ export const VisionSection = () => {
               <span className="grad-text g-redpurple mt-1">Digital Advantage.</span>
             </h2>
             <p className="mt-6 text-base sm:text-[17px] leading-relaxed text-[#1E293B] max-w-lg">
-              We transform fragmented systems into seamless digital ecosystems. By combining data-driven intelligence with cutting-edge UI/UX design, we engineer web, app, and gaming platforms that are as scalable as they are visually striking.
+              We bridge physical and digital worlds by integrating IoT connectivity and AI intelligence into high-performance web and mobile applications. From edge devices to intuitive interfaces, we engineer scalable, data-driven platforms designed for real-time impact.
             </p>
           </div>
         </div>
